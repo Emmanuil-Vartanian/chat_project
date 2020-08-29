@@ -1,0 +1,57 @@
+.loginPartner {
+  text-align: center;
+  font-size: 18px;
+  border-bottom: 1px solid;
+  padding-bottom: 15px;
+}
+
+.chatMessages {
+  padding: 15px 20px 15px 100px;
+  height: 80%
+}
+
+.messagesBlock {
+  height: 100%;
+  overflow: auto;
+}
+
+.sendMessage {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.sendMessage > input {
+  width: 70%;
+}
+
+.sendMessage > button {
+  width: 25%;
+}
+
+.dialogueIsEmpty {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  padding-top: 100px;
+  padding-right: 80px;
+  font-size: 25px;
+  color: #797979;
+}
+
+.dialogueIsEmpty p {
+  margin-top: 15px;
+}
+
+.messagesBlock::-webkit-scrollbar {
+  width: 3px;
+}
+
+.messagesBlock::-webkit-scrollbar-thumb {
+  background: #bdbdbd;
+  border-radius: 50px;
+}
+
+.messagesBlock::-webkit-scrollbar-track {
+  background: #e9e9e9;
+  border-radius: 50px;
+}

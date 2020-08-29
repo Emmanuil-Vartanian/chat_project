@@ -1,0 +1,29 @@
+.registered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  flex-direction: column;
+  height: 100%;
+}
+
+.good-register {
+  max-width: 600px;
+  width: 100%;
+  padding: 35px;
+  border-radius: 5px;
+  box-shadow: 1px 1px 10px 1px #e1e1e1;
+  font-size: 20px;
+  color: #1a1a1a;
+  background: white;
+}
+
+.good-register h2 {
+  font-size: 22px;
+  padding: 0 0 15px;
+}
+
+.good-register p {
+  padding-top: 5px;
+  font-size: 20px;
+}

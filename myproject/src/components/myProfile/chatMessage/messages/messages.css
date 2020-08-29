@@ -1,0 +1,22 @@
+.infoMessage {
+  margin-bottom: 15px;
+}
+
+.name {
+  color: rgb(0, 132, 255);
+}
+
+.messageAndDate {
+  display: flex;
+  justify-content: space-between;
+  margin-right: 20px;
+}
+
+.message {
+  margin-top: 10px;
+}
+
+.dateMessage {
+  color: #797979;
+  font-size: 13px;
+}
