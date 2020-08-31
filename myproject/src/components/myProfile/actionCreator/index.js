@@ -62,4 +62,20 @@ const actionOneUser = (login) => {
   };
 };
 
-export { actionAllChatsGroupOneUser, actionCreateChatGroup, actionOneUser };
+const actionLogOutPromise = (logout) => {
+  var promise = logout
+  return actionPromise("logOut", promise);
+};
+
+const actionLogOut = (logout) => {
+  return async (dispatch) => {
+    await dispatch(actionLogOutPromise(logout));
+  };
+};
+
+export {
+  actionAllChatsGroupOneUser,
+  actionCreateChatGroup,
+  actionOneUser,
+  actionLogOut,
+};

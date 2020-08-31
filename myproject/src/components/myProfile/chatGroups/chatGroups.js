@@ -47,7 +47,7 @@ class ChatGroupBar extends Component {
           </div>
 
           <div>
-            <div>{this.props.lastMessage ? this.props.lastMessage : console.log("hi") }</div>
+            <div>{this.props.lastMessage ? this.props.lastMessage : "" }</div>
           </div>
         </div>
       </div>

@@ -41,12 +41,13 @@ class LoginForm extends Component {
         if (keyData === "data") {
           const allObj = stateObj[keys][keyData][resolverName];
           if (allObj) {
-            var x = jwtDecode(allObj);
-            localStorage.setItem("idAutor", x.sub.id);
-            localStorage.setItem("email", x.sub.email);
-            localStorage.setItem("login", x.sub.login);
-            localStorage.setItem("emailAutor", x.sub.email);
-            localStorage.setItem("loginAutor", x.sub.login);
+            var jwtDecodeUser = jwtDecode(allObj);
+            localStorage.setItem("allObj", allObj);
+            localStorage.setItem("idAutor", jwtDecodeUser.sub.id);
+            localStorage.setItem("email", jwtDecodeUser.sub.email);
+            localStorage.setItem("login", jwtDecodeUser.sub.login);
+            localStorage.setItem("emailAutor", jwtDecodeUser.sub.email);
+            localStorage.setItem("loginAutor", jwtDecodeUser.sub.login);
           } else {
             return (
               <div className="error">

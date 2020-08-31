@@ -18,7 +18,7 @@ const authenticate = async ({ login, password }) => {
       secret
     );
     return token;
-  }
+  } 
 };
 
 const getLogin = async ({ login, password }) => {

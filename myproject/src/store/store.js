@@ -22,7 +22,6 @@ const actionPromise = (name, promise) => {
     name,
     status: "PENDING",
     payload: null,
-    error: null,
   });
   const actionResolved = (payload) => ({
     type: "PROMISE",
@@ -60,7 +59,7 @@ const getGQL = (url, headers = {}) => (query = "", variables = {}) =>
       ...headers,
     },
     body: JSON.stringify({ query, variables }),
-  }).then((res) => res.json())
+  }).then((res) => res.json());
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const middleware = [thunk];
