@@ -7,6 +7,7 @@ import {store} from "./store/store"
 import history from "./history";
 
 import Login from './components/signIn/signIn';
+import putPassword from './components/putPassword/putPassword';
 import Register from './components/signUp/signUp';
 import GoodRegister from './components/goodRegister/goodRegister';
 import MyProfile from './components/myProfile/myProfile';
@@ -17,6 +18,7 @@ const App = () => {
       <Router history={history}>
         <Switch>
           <Route exact path={["/", "/sign_in"]} component={Login} />
+          <Route exact path="/put_password" component={putPassword} />
           <Route exact path="/sign_up" component={Register} />
           <Route exact path="/registered" component={GoodRegister} />
           <Route exact path="/my_profile" component={MyProfile} />

@@ -12,26 +12,21 @@ import jwtDecode from "jwt-decode";
 import { actionLogin } from "./actionCreator/index";
 import "./signIn.css";
 
-const loginEye = () => {
-  const password = document.getElementById("password");
-  const notSee = document.querySelector(".not-see");
-  const see = document.querySelector(".see");
-
-  if (password.type === "password") {
-    password.type = "text";
-    see.style.display = "inline-block";
-    notSee.style.display = "none";
-  } else {
-    password.type = "password";
-    notSee.style.display = "inline-block";
-    see.style.display = "none";
-  }
-};
-
 class LoginForm extends Component {
   constructor(props) {
     super(props);
-    this.state = { login: "", password: "", backError: false };
+    this.state = {
+      login: "",
+      password: "",
+      backError: false,
+      loginEye: "password",
+    };
+  }
+
+  loginEye(type) {
+    type === "text"
+      ? this.setState({ loginEye: "text" })
+      : this.setState({ loginEye: "password" });
   }
 
   way(obj, resolverName) {
@@ -96,16 +91,34 @@ class LoginForm extends Component {
               id="password"
               value={this.state.password}
               placeholder="Пароль"
-              type="password"
+              type={this.state.loginEye}
               onChange={(e) => {
                 this.setState({ password: e.target.value });
                 this.setState({ backError: false });
               }}
             />
-            <div className="not-see" onClick={loginEye}>
+            <div
+              className="not-see"
+              style={
+                this.state.loginEye === "text"
+                  ? { display: "none" }
+                  : { display: "inline-block" }
+              }
+              onClick={() => {
+                this.loginEye("text");
+              }}
+            >
               <EyeInvisibleOutlined />
             </div>
-            <div className="see" onClick={loginEye}>
+            <div
+              className="see"
+              style={
+                this.state.loginEye === "password"
+                  ? { display: "none" }
+                  : { display: "inline-block" }
+              }
+              onClick={() => this.loginEye("password")}
+            >
               <EyeOutlined />
             </div>
           </div>

@@ -1,6 +1,5 @@
-import { actionPromise } from "../../../store/store";
+import { actionPromise, getGQL } from "../../../store/store";
 import history from "../../../history";
-import { getGQL } from "../../../store/store";
 
 const actionLoginPromise = (login, password) => {
   var promise = getGQL("http://localhost:9999/graphql")(

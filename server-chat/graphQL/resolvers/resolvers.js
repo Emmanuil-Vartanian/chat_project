@@ -18,7 +18,7 @@ const authenticate = async ({ login, password }) => {
       secret
     );
     return token;
-  } 
+  }
 };
 
 const getLogin = async ({ login, password }) => {
@@ -30,6 +30,18 @@ const getLogin = async ({ login, password }) => {
 };
 
 const getAllUsers = async () => await User.findAll();
+
+const changePassword = async ({ email, password }) => {
+  var userFind = await User.findOne({ where: { email } });
+  if (userFind) {
+    await User.update({ password }, { where: { email } });
+    userFind.email = "Пароль был изменен";
+    return userFind;
+  } else {
+    userFind = { email: "Email не найден" };
+    return userFind;
+  }
+};
 
 const changeAvatar = async ({ id, avatar }) => {
   var userFind = await User.findByPk(id);
@@ -255,6 +267,7 @@ var root = {
   getLogin,
   getOneUser,
   getAllUsers,
+  changePassword,
   createUser,
   changeAvatar,
   getAllMessages,
@@ -266,7 +279,7 @@ var root = {
   getAllImages,
   getAllImagesOneUser,
   createImage,
-  changeLastMessage
+  changeLastMessage,
 };
 
 module.exports.root = root;

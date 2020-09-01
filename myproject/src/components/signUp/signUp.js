@@ -12,38 +12,6 @@ import {
 import { actionRegister, actionCreateImage } from "./actionCreator/index";
 import "./signUp.css";
 
-const registerEye = () => {
-  const password = document.getElementById("registerPassword");
-  const notSee = document.querySelector(".not-see");
-  const see = document.querySelector(".see");
-
-  if (password.type === "password") {
-    password.type = "text";
-    see.style.display = "inline-block";
-    notSee.style.display = "none";
-  } else {
-    password.type = "password";
-    notSee.style.display = "inline-block";
-    see.style.display = "none";
-  }
-};
-
-const registerConfirmEye = () => {
-  const password = document.getElementById("confirmPassword");
-  const notSee = document.querySelector(".not-see-confirm");
-  const see = document.querySelector(".see-confirm");
-
-  if (password.type === "password") {
-    password.type = "text";
-    see.style.display = "inline-block";
-    notSee.style.display = "none";
-  } else {
-    password.type = "password";
-    notSee.style.display = "inline-block";
-    see.style.display = "none";
-  }
-};
-
 class Register1 extends Component {
   constructor(props) {
     super(props);
@@ -52,7 +20,21 @@ class Register1 extends Component {
       registerPassword: "",
       confirmPassword: "",
       login: "",
+      registerEye: "password",
+      registerConfirmEye: "password",
     };
+  }
+
+  registerEye(type) {
+    type === "text"
+      ? this.setState({ registerEye: "text" })
+      : this.setState({ registerEye: "password" });
+  }
+
+  registerConfirmEye(type) {
+    type === "text"
+      ? this.setState({ registerConfirmEye: "text" })
+      : this.setState({ registerConfirmEye: "password" });
   }
 
   buttonEnter = (e) => {
@@ -118,17 +100,33 @@ class Register1 extends Component {
             <div className="password-block">
               <input
                 value={this.state.registerPassword}
-                type="password"
+                type={this.state.registerEye}
                 id="registerPassword"
                 name="password"
                 onChange={(e) =>
                   this.setState({ registerPassword: e.target.value })
                 }
               />
-              <div className="not-see" onClick={registerEye}>
+              <div
+                className="not-see"
+                style={
+                  this.state.registerEye === "text"
+                    ? { display: "none" }
+                    : { display: "inline-block" }
+                }
+                onClick={() => this.registerEye("text")}
+              >
                 <EyeInvisibleOutlined />
               </div>
-              <div className="see" onClick={registerEye}>
+              <div
+                className="see"
+                style={
+                  this.state.registerEye === "password"
+                    ? { display: "none" }
+                    : { display: "inline-block" }
+                }
+                onClick={() => this.registerEye("password")}
+              >
                 <EyeOutlined />
               </div>
             </div>
@@ -139,7 +137,7 @@ class Register1 extends Component {
             <div className="confirmPassword-block">
               <input
                 value={this.state.confirmPassword}
-                type="password"
+                type={this.state.registerConfirmEye}
                 id="confirmPassword"
                 onClick={() => borderPasswordDischarge()}
                 pattern={validatePassword(
@@ -151,10 +149,26 @@ class Register1 extends Component {
                   this.setState({ confirmPassword: e.target.value })
                 }
               />
-              <div className="not-see-confirm" onClick={registerConfirmEye}>
+              <div
+                className="not-see-confirm"
+                style={
+                  this.state.registerConfirmEye === "text"
+                    ? { display: "none" }
+                    : { display: "inline-block" }
+                }
+                onClick={() => this.registerConfirmEye("text")}
+              >
                 <EyeInvisibleOutlined />
               </div>
-              <div className="see-confirm" onClick={registerConfirmEye}>
+              <div
+                className="see-confirm"
+                style={
+                  this.state.registerConfirmEye === "password"
+                    ? { display: "none" }
+                    : { display: "inline-block" }
+                }
+                onClick={() => this.registerConfirmEye("password")}
+              >
                 <EyeOutlined />
               </div>
             </div>
