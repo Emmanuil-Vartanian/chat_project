@@ -19,11 +19,43 @@
 }
 
 .good-register h2 {
-  font-size: 22px;
+  font-size: 25px;
   padding: 0 0 15px;
 }
 
 .good-register p {
   padding-top: 5px;
-  font-size: 20px;
+  font-size: 22px;
+}
+
+#file {
+  margin: 20px 0;
+  font-size: 17px;
+}
+
+.btns {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.btns > button {
+  font-size: 15px;
+}
+
+.errorAvatar {
+  color: red;
+  margin-top: 10px;
+}
+
+.error404 {
+  text-align: center;
+}
+
+.error404 > h1 {
+  font-size: 40px;
+}
+
+.error404 > p {
+  font-size: 30px;
+  padding-top: 10px;
 }

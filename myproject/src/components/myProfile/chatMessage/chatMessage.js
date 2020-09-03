@@ -12,7 +12,7 @@ import {
   actionAllMessage,
   actionChangeLastMessage,
 } from "./actionCreator/index";
-import dialogueIsEmpty from "../../../dialogueIsEmpty.png";
+import dialogueIsEmpty from "../../../imagesForSite/dialogueIsEmpty.png";
 
 const socket = io.connect("http://localhost:9999");
 
@@ -58,7 +58,6 @@ class ChatMessageInfo extends Component {
       for (var keyData in stateObj[keys]) {
         if (keyData === "data") {
           const allObj = stateObj[keys][keyData][resolverName];
-          console.log(stateObj[keys][keyData]);
           if (!allObj) {
             return (
               <div className="dialogueIsEmpty">
@@ -119,9 +118,6 @@ class ChatMessageInfo extends Component {
             }}
           >
             {this.way("allMessageOneUser", "getAllMessagesOneUser", (el) => {
-              // const a = this.way2("allMessageOneUser", "getAllMessagesOneUser");
-              // const lastMess = a[a.length - 1];
-              // localStorage.setItem("lastMess", lastMess.message);
               return (
                 <Messages
                   key={el.id}

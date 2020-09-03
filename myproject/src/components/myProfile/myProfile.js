@@ -1,17 +1,16 @@
 import React, { Component } from "react";
-import { TeamOutlined, FormOutlined, SearchOutlined } from "@ant-design/icons";
+import { TeamOutlined, SearchOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import io from "socket.io-client";
 import "./myProfile.css";
 
-import openChat from "../../openChat.png";
+import openChat from "../../imagesForSite/openChat.png";
 
 import {
   actionAllChatsGroupOneUser,
   actionCreateChatGroup,
   actionOneUser,
-  actionLogOut,
 } from "./actionCreator/index";
 import {
   actionAllMessageOneUser,
@@ -96,7 +95,6 @@ class MyProfile1 extends Component {
                     <TeamOutlined />
                     <span className="span">Список чатов</span>
                   </div>
-                  {/* <FormOutlined className="createChat" /> */}
 
                   <nav className="nav-left main-nav hamburger-menu">
                     <input id="menu__toggle" type="checkbox" />
@@ -105,19 +103,18 @@ class MyProfile1 extends Component {
                     </label>
                     <ul className="menu-box menu__box">
                       <li>
-                        <a className="link menu__item" href="#">
+                        <Link className="link menu__item" to="#">
                           Настройки
-                        </a>
+                        </Link>
                       </li>
-                      <li>
-                        <Link
-                          className="link menu__item"
-                          to="/"
-                          onClick={() => {
-                            localStorage.allObj = "";
-                            this.props.onLogin("", "");
-                          }}
-                        >
+                      <li
+                        onClick={() => {
+                          localStorage.allObj = "";
+                          this.props.onLogin("", "");
+                          history.push("/");
+                        }}
+                      >
+                        <Link className="link menu__item" to="">
                           Выйти
                         </Link>
                       </li>
@@ -278,7 +275,7 @@ class MyProfile1 extends Component {
             </div>
           </div>
         ) : (
-          <div className="error404">
+          <div className="error401">
             <h1>Ошибка 401</h1>
             <p>Требуется авторизация</p>
           </div>

@@ -2,13 +2,6 @@ import React, { Component } from "react";
 import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
 import { connect } from "react-redux";
 
-import {
-  validateEmail,
-  borderEmailDischarge,
-  borderPasswordDischarge,
-  validatePassword,
-  signUpValidate,
-} from "./signUpValidate/signUpValidate";
 import { actionRegister, actionCreateImage } from "./actionCreator/index";
 import "./signUp.css";
 
@@ -22,6 +15,8 @@ class Register1 extends Component {
       login: "",
       registerEye: "password",
       registerConfirmEye: "password",
+      backErrorPassword: false,
+      backErrorEmail: false,
     };
   }
 
@@ -37,16 +32,26 @@ class Register1 extends Component {
       : this.setState({ registerConfirmEye: "password" });
   }
 
+  validateAndRegister() {
+    this.state.registerPassword === this.state.confirmPassword
+      ? this.validateEmailPattern(this.state.registerEmail)
+        ? this.props.register(
+            this.state.registerEmail,
+            this.state.registerPassword,
+            this.state.login
+          )
+        : this.setState({ backErrorEmail: true })
+      : this.setState({ backErrorPassword: true });
+  }
+
   buttonEnter = (e) => {
-    if (e.key === "Enter")
-      signUpValidate(
-        this.state.registerEmail,
-        this.state.registerPassword,
-        this.state.confirmPassword,
-        this.state.login,
-        this.props
-      );
+    if (e.key === "Enter") this.validateAndRegister();
   };
+
+  validateEmailPattern(email) {
+    var pattern = /^[a-z0-9._-]+@[a-z]+\.[a-z]{2,4}$/;
+    return pattern.test(email);
+  }
 
   render() {
     return (
@@ -64,18 +69,23 @@ class Register1 extends Component {
               type="email"
               id="registerEmail"
               name="email"
-              pattern={validateEmail(this.state.registerEmail)}
-              onClick={() => borderEmailDischarge()}
-              onChange={(e) => this.setState({ registerEmail: e.target.value })}
+              onChange={(e) => {
+                this.setState({ registerEmail: e.target.value });
+                this.setState({ backErrorEmail: false });
+                const repeatEmail = document.querySelector(".repeat-email");
+                repeatEmail.style.display = "none";
+              }}
             />
           </div>
 
-          <div className="pattern-email">
-            <p></p>
-            <div>
-              <p>Неверный формат почты</p>
+          {this.state.backErrorEmail ? (
+            <div className="pattern-email">
+              <p></p>
+              <div>
+                <p>Неверный формат почты</p>
+              </div>
             </div>
-          </div>
+          ) : null}
 
           <div className="repeat-email">
             <p></p>
@@ -103,9 +113,10 @@ class Register1 extends Component {
                 type={this.state.registerEye}
                 id="registerPassword"
                 name="password"
-                onChange={(e) =>
-                  this.setState({ registerPassword: e.target.value })
-                }
+                onChange={(e) => {
+                  this.setState({ registerPassword: e.target.value });
+                  this.setState({ backErrorPassword: false });
+                }}
               />
               <div
                 className="not-see"
@@ -139,15 +150,11 @@ class Register1 extends Component {
                 value={this.state.confirmPassword}
                 type={this.state.registerConfirmEye}
                 id="confirmPassword"
-                onClick={() => borderPasswordDischarge()}
-                pattern={validatePassword(
-                  this.state.registerPassword,
-                  this.state.confirmPassword
-                )}
                 name="confirmPassword"
-                onChange={(e) =>
-                  this.setState({ confirmPassword: e.target.value })
-                }
+                onChange={(e) => {
+                  this.setState({ confirmPassword: e.target.value });
+                  this.setState({ backErrorPassword: false });
+                }}
               />
               <div
                 className="not-see-confirm"
@@ -174,24 +181,20 @@ class Register1 extends Component {
             </div>
           </div>
 
-          <div className="pattern-password">
-            <p></p>
-            <div>
-              <p>Пароли не совпадают</p>
+          {this.state.backErrorPassword ? (
+            <div className="pattern-password">
+              <p></p>
+              <div>
+                <p>Пароли не совпадают</p>
+              </div>
             </div>
-          </div>
+          ) : null}
 
           <div className="block-input-btn">
             <p></p>
             <button
               onClick={() => {
-                signUpValidate(
-                  this.state.registerEmail,
-                  this.state.registerPassword,
-                  this.state.confirmPassword,
-                  this.state.login,
-                  this.props
-                );
+                this.validateAndRegister();
               }}
               disabled={
                 !this.state.registerEmail ||
@@ -205,7 +208,7 @@ class Register1 extends Component {
           </div>
         </div>
       </div>
-    );
+    )
   }
 }
 

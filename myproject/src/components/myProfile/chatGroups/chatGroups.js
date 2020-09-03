@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Link } from "react-router-dom";
 
 import date from "../../../date/date";
 import { actionAllImagesOneUser, actionAllImages } from "./actionCreator/index";

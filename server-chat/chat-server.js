@@ -7,6 +7,7 @@ const app = express();
 const http = Server(app);
 const io = require("socket.io").listen(http);
 const multer = require("multer");
+const moment = require("moment");
 
 // const { sequelize } = require("./sequelize/index");
 const { schema } = require("./graphQL/schema/schema");
@@ -16,6 +17,7 @@ const { User } = require("./sequelize/sequelize");
 const { Message } = require("./sequelize/sequelize");
 const { ChatGroup } = require("./sequelize/sequelize");
 const { Image } = require("./sequelize/sequelize");
+const { dateForImageName } = require("./dateForImageName/index");
 
 app.use(bodyParser.json());
 app.use(express.static("public"));
@@ -36,7 +38,8 @@ var storage = multer.diskStorage({
     cb(null, "public");
   },
   filename: function (req, file, cb) {
-    cb(null, file.originalname);
+    const date = moment().format("DD.MM.YYYY-HH.mm.ss");
+    cb(null, `${date}-${file.originalname}`);
   },
 });
 

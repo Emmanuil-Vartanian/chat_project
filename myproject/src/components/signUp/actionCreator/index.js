@@ -1,6 +1,6 @@
 import { actionPromise, getGQL } from "../../../store/store";
 import history from "../../../history";
-import { signUpValidateRepeat } from "../signUpValidate/signUpValidate";
+// import { signUpValidateRepeat } from "../signUpValidate/signUpValidate";
 
 function actionRegisterPromise(email, password, login, avatar) {
   let promise = getGQL("http://localhost:9999/graphql")(
@@ -14,13 +14,18 @@ function actionRegisterPromise(email, password, login, avatar) {
   return actionPromise("register", promise);
 }
 
-function actionRegister(email, password, login, avatar="") {
+function actionRegister(email, password, login, avatar = "") {
   return async (dispatch) => {
-    let user = await dispatch(actionRegisterPromise(email, password, login, avatar));
+    let user = await dispatch(
+      actionRegisterPromise(email, password, login, avatar)
+    );
     if (user.data.createUser !== null) {
-      history.push("/registered");
-      localStorage.setItem("registerIdForImage", user.data.createUser.id)
-    } else signUpValidateRepeat();
+      setTimeout(()=> history.push("/registered"), 0) 
+      localStorage.setItem("registerIdForImage", user.data.createUser.id);
+    } else {
+      const repeatEmail = document.querySelector(".repeat-email");
+      repeatEmail.style.display = "inline-block";
+    }
   };
 }
 

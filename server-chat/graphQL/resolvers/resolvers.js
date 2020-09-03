@@ -2,6 +2,7 @@ const Sequelize = require("sequelize");
 const jwt = require("jsonwebtoken");
 const { Op, or, and } = Sequelize;
 const sha1 = require("sha1");
+const moment = require("moment");
 
 const { User } = require("../../sequelize/sequelize");
 const { Message } = require("../../sequelize/sequelize");
@@ -9,6 +10,8 @@ const { ChatGroup } = require("../../sequelize/sequelize");
 const { Image } = require("../../sequelize/sequelize");
 
 const secret = `7.!BMB?Y+Bc2vZE-Hb5YuCT6QvE^FN,JWN6M?_VtFXeC5dLtB!`;
+
+// const date = moment().format("DD.MM.YYYY-HH.mm.ss_SSS");
 
 const authenticate = async ({ login, password }) => {
   const user = await User.findOne({ where: { login, password } });
@@ -46,7 +49,8 @@ const changePassword = async ({ email, password }) => {
 const changeAvatar = async ({ id, avatar }) => {
   var userFind = await User.findByPk(id);
   if (userFind) {
-    await User.update({ avatar }, { where: { id } });
+    const date = moment().format("DD.MM.YYYY-HH.mm.ss");
+    await User.update({ avatar: `${date}-${avatar}` }, { where: { id } });
     userFind.avatar = "The avatar has been change";
     return userFind;
   }
@@ -85,11 +89,12 @@ const getAllImagesOneUser = async ({ autorId }) => {
 };
 
 const createImage = async ({ image, autorId }) => {
-  return await Image.create({ image, autorId });
+  const date = moment().format("DD.MM.YYYY-HH.mm.ss");
+  return await Image.create({ image: `${date}-${image}`, autorId });
 };
 
 const getOneUser = async ({ login }) =>
-  await User.findAll({ where: { login } });
+  await User.findAll({ where: { login: login } });
 
 const createUser = async ({ email, login, password, avatar }) => {
   const wasUserCreated = await User.findOne({ where: { email } });

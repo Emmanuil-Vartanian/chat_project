@@ -137,7 +137,7 @@ class LoginForm extends Component {
           </button>
 
           <div className="register-put-password">
-            <Link to="/sign_up">Зарегестрироваться</Link>
+            <Link to="/sign_up">Зарегистрироваться</Link>
             <Link to="/put_password">Забыли пароль?</Link>
           </div>
         </div>

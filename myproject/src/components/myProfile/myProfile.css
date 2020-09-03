@@ -1,28 +1,31 @@
 .container {
-  padding: 10px 200px 0;
+  display: flex;
+  justify-content: center;
   height: 97%;
 }
 
 .my-profile {
+  width: 1000px;
   height: 100%;
   display: flex;
   border-radius: 5px;
   background: white;
   box-shadow: 1px 1px 10px 1px #e1e1e1;
   max-height: 100%;
+  margin-top: 8px;
 }
 
 .chat-sidebar {
-  width: 100%;
+  width: 32%;
   max-height: 100%;
-  max-width: 300px;
   padding-top: 15px;
   border-right: 1px solid #d8d8d8;
+  position: relative;
 }
 
 .create-chat {
   padding: 5px 13px 0 15px;
-  height: 14%;
+  /* height: 14%; */
 }
 
 .create-chat > div:first-child {
@@ -43,6 +46,7 @@
 .chat-groups {
   overflow: auto;
   max-height: 85%;
+  margin-top: 5px;
 }
 
 .search-input {
@@ -59,7 +63,8 @@
   outline: none;
   font-size: 15px;
   padding-left: 10px;
-  width: 245px;
+  max-width: 245px;
+  width: 100%;
 }
 
 .search-input .anticon {
@@ -98,8 +103,7 @@
 }
 
 .chat-messages {
-  width: 100%;
-  padding-top: 15px;
+  width: 68%;
 }
 
 .createChat {
@@ -135,16 +139,16 @@
   margin-top: 15px;
 }
 
-.error404 {
+.error401 {
   text-align: center;
-  margin-top: 200px;
+  margin-top: 250px;
 }
 
-.error404 > h1 {
+.error401 > h1 {
   font-size: 40px;
 }
 
-.error404 > p {
+.error401 > p {
   font-size: 30px;
   padding-top: 10px;
 }
@@ -156,8 +160,6 @@
 .menu__btn {
   display: flex;
   align-items: center;
-  position: fixed;
-  top: 24px;
   left: 460px;
   width: 26px;
   height: 26px;
@@ -170,10 +172,10 @@
 .menu__btn > span::after {
   display: block;
   position: absolute;
-  width: 100%;
+  width: 26px;
   height: 2px;
-  background-color: #746afd;
-  transition: transform 0.3s;
+  background-color: #818181;
+  transition: transform 0.2s;
 }
 .menu__btn > span::before {
   content: "";
@@ -184,20 +186,31 @@
   top: 7px;
 }
 .menu__box:not([not-menu]) {
-  position: fixed;
+  position: absolute;
   visibility: hidden;
-  top: 10px;
-  left: 200px;
-  width: 300px;
-  height: 100px;
-  padding: 10px 0;
+  overflow: hidden;
+  top: 65px;
+  left: 0;
+  width: 100%;
+  max-width: 320px;
+  height: 0;
   background-color: #ffffff;
   z-index: 2;
+  transition: all 0.2s;
   box-shadow: 1px 0px 6px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s;
   display: flex;
   flex-direction: column;
 }
+
+.menu__box > li {
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.menu__box > li:hover {
+  background: #eaf3fb;
+}
+
 .menu__item {
   line-height: 2;
   padding-left: 10px;
@@ -206,6 +219,7 @@
   font-weight: 600;
   text-decoration: none;
 }
+
 #menu__toggle:checked ~ .menu__btn > span {
   transform: rotate(45deg);
   transition: transform 0.5s;
@@ -226,10 +240,11 @@
 #menu__toggle:checked ~ .menu__box {
   visibility: visible;
   top: 65px;
+  height: 100px;
+  padding: 10px 0;
 }
 
 .active:after {
   width: 50px;
   left: 33%;
 }
-
