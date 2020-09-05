@@ -20,6 +20,7 @@ class PutPasswordForm extends Component {
       backErrorPassword: false,
       newPasswordEye: "password",
       confirmNewPasswordEye: "password",
+      backErrorMailNotFound: false,
     };
   }
 
@@ -53,10 +54,18 @@ class PutPasswordForm extends Component {
     }
   }
 
+  buttonEnter = (e) => {
+    if (e.key === "Enter") {
+      this.state.confirmNewPassword === this.state.newPassword
+        ? this.props.putPassword(this.state.email, this.state.newPassword)
+        : this.setState({ backErrorPassword: true });
+    }
+  };
+
   render() {
     return (
       <div className="put-password">
-        <div className="form-put">
+        <div className="form-put" onKeyPress={this.buttonEnter}>
           <div className="put-title">
             <h2>Забыли пароль?</h2>
             <p>Пожалуйста, введите ваш E-mail и новый пароль</p>

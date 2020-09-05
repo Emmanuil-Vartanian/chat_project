@@ -42,9 +42,7 @@ class MyProfile1 extends Component {
   }
 
   clickEventHandler = (id) => {
-    this.setState({
-      activeTab: id,
-    });
+    this.setState({ activeTab: id });
   };
 
   way(obj, resolverName, a) {
@@ -73,14 +71,11 @@ class MyProfile1 extends Component {
     }
   }
 
-  a = () => {
+  componentDidMount() {
     const idAutor = localStorage.getItem("idAutor");
     this.props.allChatsGroupOneUser(idAutor);
-  };
-
-  componentDidMount() {
-    this.a();
     this.props.allMessage();
+    history.push(`/my_profile`)
   }
 
   render() {
@@ -125,20 +120,20 @@ class MyProfile1 extends Component {
                 <div className="search-input">
                   <input
                     value={this.state.text}
-                    onChange={(e) => this.setState({ text: e.target.value })}
+                    onChange={(e) => {
+                      this.setState({ text: e.target.value });
+                      setTimeout(() => {
+                        const idAutor = localStorage.getItem("idAutor");
+                        this.state.text === ""
+                          ? this.props.allChatsGroupOneUser(idAutor) &&
+                            this.setState({ foundUser: false })
+                          : this.props.oneUser(this.state.text) &&
+                            this.setState({ foundUser: true });
+                      }, 0);
+                    }}
                     placeholder="Введите ник"
                   />
-                  <SearchOutlined
-                    className="search"
-                    onClick={() => {
-                      const idAutor = localStorage.getItem("idAutor");
-                      this.state.text === ""
-                        ? this.props.allChatsGroupOneUser(idAutor) &&
-                          this.setState({ foundUser: false })
-                        : this.props.oneUser(this.state.text) &&
-                          this.setState({ foundUser: true });
-                    }}
-                  />
+                  <SearchOutlined className="search" />
                 </div>
               </div>
 

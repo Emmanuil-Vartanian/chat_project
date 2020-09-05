@@ -94,7 +94,7 @@ const createImage = async ({ image, autorId }) => {
 };
 
 const getOneUser = async ({ login }) =>
-  await User.findAll({ where: { login: login } });
+  await User.findAll({ where: { login } });
 
 const createUser = async ({ email, login, password, avatar }) => {
   const wasUserCreated = await User.findOne({ where: { email } });
@@ -215,7 +215,7 @@ const getAllChatGroupOneUser = async ({ id }) => {
         }
         return chatGroupOneUser;
       } else if (autorChatGroup.length) {
-        // autorChatGroup.sort((a, b) => (a.updatedAt > b.updatedAt ? -1 : 1));
+        autorChatGroup.sort((a, b) => (a.updatedAt > b.updatedAt ? -1 : 1));
         for (var value of autorChatGroup) {
           const partner = await User.findAll({
             where: { id: value.partnerId },
@@ -226,6 +226,7 @@ const getAllChatGroupOneUser = async ({ id }) => {
         return autorChatGroup;
       } else {
         for (var value of partnerChatGroup) {
+          partnerChatGroup.sort((a, b) => (a.updatedAt > b.updatedAt ? -1 : 1));
           const autor = await User.findAll({ where: { id: value.autorId } });
           value.autorId = autor[0];
           value.partnerId = partner[0];

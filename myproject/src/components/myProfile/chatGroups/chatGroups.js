@@ -19,11 +19,6 @@ class ChatGroupBar extends Component {
     }
   }
 
-  componentDidMount() {
-    this.props.allImagesOneUser(+localStorage.getItem("idPartner"));
-    this.props.allImages();
-  }
-
   render() {
     return (
       <div className={this.props.addedName}>
@@ -46,7 +41,7 @@ class ChatGroupBar extends Component {
           </div>
 
           <div>
-            <div>{this.props.lastMessage ? this.props.lastMessage : "" }</div>
+            <div>{this.props.lastMessage ? this.props.lastMessage : ""}</div>
           </div>
         </div>
       </div>
@@ -54,21 +49,14 @@ class ChatGroupBar extends Component {
   }
 }
 
-const ChatGroup = ({
-  id,
-  login,
-  avatar,
-  lastMessage,
-  updatedAt,
-  addedName,
-}) => (
+const ChatGroup = (props) => (
   <ConnectedChatGroupBar
-    id={id}
-    login={login}
-    avatar={avatar}
-    lastMessage={lastMessage}
-    updatedAt={updatedAt}
-    addedName={addedName}
+    id={props.id}
+    login={props.login}
+    avatar={props.avatar}
+    lastMessage={props.lastMessage}
+    updatedAt={props.updatedAt}
+    addedName={props.addedName}
   />
 );
 

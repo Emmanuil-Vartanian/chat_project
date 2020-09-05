@@ -2,6 +2,10 @@ import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import { connect } from "react-redux";
 import io from "socket.io-client";
+import { Picker } from "emoji-mart";
+import "./emoji-mart.css";
+
+import { SmileOutlined } from "@ant-design/icons";
 
 import "./chatMessage.css";
 import Messages from "./messages/messages";
@@ -21,25 +25,8 @@ class ChatMessageInfo extends Component {
     super(props);
     this.state = {
       sendMessage: "",
-      buttonEnter: (e) => {
-        if (e.key === "Enter") {
-          socket.emit("send mess", this.state.sendMessage);
-          this.props.createMessage(
-            this.state.sendMessage,
-            localStorage.getItem("idAutor"),
-            localStorage.getItem("idPartner")
-          );
-          this.props.changeLastMessage(
-            localStorage.getItem("idChatGroup"),
-            this.state.sendMessage
-          );
-          setTimeout(() => {
-            const idAutor = localStorage.getItem("idAutor");
-            this.props.allChatsGroupOneUser(idAutor);
-          }, 0);
-          this.setState({ sendMessage: "" });
-        }
-      },
+      chosenEmoji: null,
+      windowEmoji: "emojiOff",
     };
 
     socket.on("add mess", () => {
@@ -52,13 +39,37 @@ class ChatMessageInfo extends Component {
     });
   }
 
+  onEmojiClick = (event, emojiObject) => {
+    this.setState({ chosenEmoji: emojiObject });
+  };
+
+  buttonEnter = (e) => {
+    if (e.key === "Enter") {
+      socket.emit("send mess", this.state.sendMessage);
+      this.props.createMessage(
+        this.state.sendMessage,
+        localStorage.getItem("idAutor"),
+        localStorage.getItem("idPartner")
+      );
+      this.props.changeLastMessage(
+        localStorage.getItem("idChatGroup"),
+        this.state.sendMessage
+      );
+      setTimeout(() => {
+        const idAutor = localStorage.getItem("idAutor");
+        this.props.allChatsGroupOneUser(idAutor);
+      }, 0);
+      this.setState({ sendMessage: "" });
+    }
+  };
+
   way(obj, resolverName, a) {
     const stateObj = this.props.state[obj];
     for (var keys in stateObj) {
       for (var keyData in stateObj[keys]) {
         if (keyData === "data") {
           const allObj = stateObj[keys][keyData][resolverName];
-          if (!allObj) {
+          if (allObj.length === 0) {
             return (
               <div className="dialogueIsEmpty">
                 <div>
@@ -99,7 +110,7 @@ class ChatMessageInfo extends Component {
     this.scrollToBottom();
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps, prevState) {
     this.scrollToBottom();
   }
 
@@ -132,7 +143,21 @@ class ChatMessageInfo extends Component {
             })}
           </div>
 
-          <div className="sendMessage" onKeyPress={this.state.buttonEnter}>
+          <div className="sendMessage" onKeyPress={this.buttonEnter}>
+            {/* <div className={this.state.windowEmoji}> */}
+            <Picker />
+            {/* </div> */}
+
+            <div className={this.state.windowEmoji}>
+              <Picker />
+            </div>
+
+            <SmileOutlined
+              className="smiles"
+              onClick={() => {
+                setTimeout(this.setState({ windowEmoji: "emojiOn" }), 0);
+              }}
+            />
             <input
               type="text"
               value={this.state.sendMessage}
@@ -148,14 +173,13 @@ class ChatMessageInfo extends Component {
                   localStorage.getItem("idPartner")
                 );
 
-                this.props.changeLastMessage(
-                  localStorage.getItem("idChatGroup"),
-                  this.state.sendMessage
-                );
-
                 setTimeout(() => {
                   const idAutor = localStorage.getItem("idAutor");
                   this.props.allChatsGroupOneUser(idAutor);
+                  this.props.changeLastMessage(
+                    localStorage.getItem("idChatGroup"),
+                    this.state.sendMessage
+                  );
                 }, 0);
 
                 this.setState({ sendMessage: "" });
