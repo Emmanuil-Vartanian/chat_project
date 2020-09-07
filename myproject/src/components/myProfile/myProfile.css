@@ -44,7 +44,7 @@
 }
 
 .chat-groups {
-  overflow: auto;
+  overflow: overlay;
   max-height: 85%;
   margin-top: 10px;
 }

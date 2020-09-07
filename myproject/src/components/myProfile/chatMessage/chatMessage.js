@@ -3,11 +3,11 @@ import ReactDOM from "react-dom";
 import { connect } from "react-redux";
 import io from "socket.io-client";
 import { Picker } from "emoji-mart";
-import "./emoji-mart.css";
 
 import { SmileOutlined } from "@ant-design/icons";
 
 import "./chatMessage.css";
+import "emoji-mart/css/emoji-mart.css";
 import Messages from "./messages/messages";
 import { actionAllChatsGroupOneUser } from "../actionCreator/index";
 import {
@@ -25,8 +25,8 @@ class ChatMessageInfo extends Component {
     super(props);
     this.state = {
       sendMessage: "",
-      chosenEmoji: null,
-      windowEmoji: "emojiOff",
+      windowEmoji: false,
+      // windowEmoji: "emojiOff",
     };
 
     socket.on("add mess", () => {
@@ -38,10 +38,6 @@ class ChatMessageInfo extends Component {
       this.props.allChatsGroupOneUser(idAutor);
     });
   }
-
-  onEmojiClick = (event, emojiObject) => {
-    this.setState({ chosenEmoji: emojiObject });
-  };
 
   buttonEnter = (e) => {
     if (e.key === "Enter") {
@@ -144,19 +140,17 @@ class ChatMessageInfo extends Component {
           </div>
 
           <div className="sendMessage" onKeyPress={this.buttonEnter}>
-            {/* <div className={this.state.windowEmoji}> */}
-            <Picker />
-            {/* </div> */}
-
-            <div className={this.state.windowEmoji}>
-              <Picker />
-            </div>
+            {this.state.windowEmoji && (
+              <div className="emojiOn">
+                <Picker set="apple" />
+              </div>
+            )}
 
             <SmileOutlined
               className="smiles"
-              onClick={() => {
-                setTimeout(this.setState({ windowEmoji: "emojiOn" }), 0);
-              }}
+              onClick={() =>
+                this.setState({ windowEmoji: !this.state.windowEmoji })
+              }
             />
             <input
               type="text"

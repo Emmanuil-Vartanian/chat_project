@@ -104,12 +104,11 @@ class LoginForm extends Component {
                   ? { display: "none" }
                   : { display: "inline-block" }
               }
-              onClick={() => {
-                this.loginEye("text");
-              }}
+              onClick={() => this.loginEye("text")}
             >
               <EyeInvisibleOutlined />
             </div>
+
             <div
               className="see"
               style={

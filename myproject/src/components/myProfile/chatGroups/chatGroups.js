@@ -40,8 +40,14 @@ class ChatGroupBar extends Component {
             </span>
           </div>
 
-          <div>
-            <div>{this.props.lastMessage ? this.props.lastMessage : ""}</div>
+          <div className="lastMessageContainer">
+            <div className="lastMessage">
+              {this.props.lastMessage
+                ? this.props.lastMessage.length > 25
+                  ? this.props.lastMessage.substr(0, 25) + "..."
+                  : this.props.lastMessage
+                : ""}
+            </div>
           </div>
         </div>
       </div>
