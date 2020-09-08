@@ -2,14 +2,16 @@
   text-align: center;
   font-size: 18px;
   border-bottom: 1px solid;
-  /* padding-bottom: 15px; */
   padding: 15px 0;
 }
 
 .chatMessages {
-  padding: 15px 20px 0 100px;
+  padding: 15px 0 0 30px;
+  max-width: 570px;
+  margin: 0 auto;
   height: 100%;
   max-height: 89%;
+  position: relative;
 }
 
 .messagesBlock {
@@ -20,14 +22,17 @@
 .sendMessage {
   margin-top: 20px;
   display: flex;
+  align-items: center;
 }
 
 .sendMessage > input {
   width: 70%;
+  padding: 4px;
 }
 
 .sendMessage > button {
   width: 25%;
+  padding: 4px;
 }
 
 .dialogueIsEmpty {
@@ -59,14 +64,14 @@
 }
 
 .smiles {
-  font-size: 20px;
+  font-size: 25px;
   padding-right: 10px;
   color: gray;
   cursor: pointer;
 }
 
 .sendMessage > span .sendMessage > span > svg .anticon .anticon-smile .smiles {
-  border: 1px solid red ;
+  border: 1px solid red;
 }
 
 :focus {
@@ -79,11 +84,10 @@
 
 .emojiOn {
   position: absolute;
-  bottom: 65px;
-  right: 570px;
+  bottom: 70px;
+  left: 7px;
 }
 
 .emoji-mart-anchor {
   cursor: pointer;
 }
-

@@ -36,18 +36,12 @@ class ChatGroupBar extends Component {
           <div className="userName">
             <span>{this.props.login}</span>
             <span className="date">
-              {this.props.updatedAt ? date(this.props.updatedAt) : ""}
+              {this.props.updatedAt ? date(this.props.updatedAt, "forChatGroups") : ""}
             </span>
           </div>
 
-          <div className="lastMessageContainer">
-            <div className="lastMessage">
-              {this.props.lastMessage
-                ? this.props.lastMessage.length > 25
-                  ? this.props.lastMessage.substr(0, 25) + "..."
-                  : this.props.lastMessage
-                : ""}
-            </div>
+          <div className="lastMessage">
+            {this.props.lastMessage ? this.props.lastMessage : ""}
           </div>
         </div>
       </div>

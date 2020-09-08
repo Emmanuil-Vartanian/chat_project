@@ -8,6 +8,7 @@ import { SmileOutlined } from "@ant-design/icons";
 
 import "./chatMessage.css";
 import "emoji-mart/css/emoji-mart.css";
+
 import Messages from "./messages/messages";
 import { actionAllChatsGroupOneUser } from "../actionCreator/index";
 import {
@@ -26,7 +27,6 @@ class ChatMessageInfo extends Component {
     this.state = {
       sendMessage: "",
       windowEmoji: false,
-      // windowEmoji: "emojiOff",
     };
 
     socket.on("add mess", () => {
@@ -80,6 +80,19 @@ class ChatMessageInfo extends Component {
             );
           }
           return allObj.map(a);
+        } else if (stateObj[keys] === "PENDING") {
+          return (
+            <div className="dialogueIsEmpty">
+              <div>
+                <img
+                  src="https://www.arthor.ru/wp-content/themes/woodmart/images/tour/ajax-loader.gif"
+                  alt="loading"
+                  width="150px"
+                />
+                <p>Собираем все сообщения</p>
+              </div>
+            </div>
+          );
         }
       }
     }
@@ -106,7 +119,7 @@ class ChatMessageInfo extends Component {
     this.scrollToBottom();
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate() {
     this.scrollToBottom();
   }
 
