@@ -9,6 +9,8 @@ import { SmileOutlined } from "@ant-design/icons";
 import "./chatMessage.css";
 import "emoji-mart/css/emoji-mart.css";
 
+import date from "../../../date/date";
+
 import Messages from "./messages/messages";
 import { actionAllChatsGroupOneUser } from "../actionCreator/index";
 import {
@@ -65,7 +67,7 @@ class ChatMessageInfo extends Component {
       for (var keyData in stateObj[keys]) {
         if (keyData === "data") {
           const allObj = stateObj[keys][keyData][resolverName];
-          if (allObj.length === 0) {
+          if (allObj === null || allObj.length === 0) {
             return (
               <div className="dialogueIsEmpty">
                 <div>
@@ -117,6 +119,11 @@ class ChatMessageInfo extends Component {
 
   componentDidMount() {
     this.scrollToBottom();
+    socket.on("add online", (data) => {
+      console.log(data);
+      const idAutor = localStorage.getItem("idAutor");
+      this.props.allChatsGroupOneUser(idAutor);
+    });
   }
 
   componentDidUpdate() {
@@ -128,6 +135,9 @@ class ChatMessageInfo extends Component {
       <>
         <div className="loginPartner">
           {localStorage.getItem("loginPartner")}
+          {localStorage.getItem("onlinePartner") === "false"
+            ? " был(а) в сети " + date(localStorage.getItem("updatedAtPartner"), "forChatGroups")
+            : <span style={{color: "green"}}> онлайн</span>}
         </div>
 
         <div className="chatMessages">

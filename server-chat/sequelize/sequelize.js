@@ -41,6 +41,7 @@ User.init(
       },
     },
     avatar: Sequelize.STRING,
+    online: { type: Sequelize.BOOLEAN, defaultValue: false },
   },
   { sequelize, modelName: "user" }
 );

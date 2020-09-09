@@ -6,7 +6,7 @@ function actionRegisterPromise(email, password, login, avatar) {
   let promise = getGQL("http://localhost:9999/graphql")(
     `mutation createUser($email: String, $login: String, $password: String, $avatar: String) {
       createUser(email: $email, login: $login, password: $password, avatar: $avatar) {
-        id, email, login, avatar
+        id, email, login, avatar, online
       }
     }`,
     { email, password, login, avatar }

@@ -56,6 +56,15 @@ const changeAvatar = async ({ id, avatar }) => {
   }
 };
 
+const changeOnline = async ({ id, online }) => {
+  var userFind = await User.findByPk(id);
+  if (userFind) {
+    await User.update({ online }, { where: { id } });
+    userFind.avatar = "The online has been change";
+    return userFind;
+  }
+};
+
 const getAllImages = async () => {
   const images = await Image.findAll();
   for (var allImages of images) {
@@ -274,6 +283,7 @@ var root = {
   getOneUser,
   getAllUsers,
   changePassword,
+  changeOnline,
   createUser,
   changeAvatar,
   getAllMessages,

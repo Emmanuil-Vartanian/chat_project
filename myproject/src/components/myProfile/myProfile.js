@@ -16,7 +16,7 @@ import {
   actionAllMessageOneUser,
   actionAllMessage,
 } from "./chatMessage/actionCreator/index";
-import { actionLogin } from "../signIn/actionCreator/index";
+import { actionLogin, actionUserOnline } from "../signIn/actionCreator/index";
 
 import ChatGroup from "./chatGroups/chatGroups";
 import ChatMessage from "./chatMessage/chatMessage";
@@ -75,7 +75,16 @@ class MyProfile1 extends Component {
     const idAutor = localStorage.getItem("idAutor");
     this.props.allChatsGroupOneUser(idAutor);
     this.props.allMessage();
-    history.push(`/my_profile`)
+    history.push(`/my_profile`);
+
+    socket.on("add online", () => {
+      // this.props.allMessageOneUser(
+      //   localStorage.getItem("autorMessId"),
+      //   localStorage.getItem("partnerMessId")
+      // );
+      const idAutor = localStorage.getItem("idAutor");
+      this.props.allChatsGroupOneUser(idAutor);
+    });
   }
 
   render() {
@@ -107,6 +116,11 @@ class MyProfile1 extends Component {
                           localStorage.allObj = "";
                           this.props.onLogin("", "");
                           history.push("/");
+                          this.props.userOnline(
+                            localStorage.getItem("idAutor"),
+                            false
+                          );
+                          socket.emit("online", false);
                         }}
                       >
                         <Link className="link menu__item" to="">
@@ -222,6 +236,20 @@ class MyProfile1 extends Component {
                               el.partnerId.id
                             );
 
+                            localStorage.setItem(
+                              "onlinePartner",
+                              +localStorage.getItem("idAutor") !== el.autorId.id
+                                ? el.autorId.online
+                                : el.partnerId.online
+                            );
+
+                            localStorage.setItem(
+                              "updatedAtPartner",
+                              +localStorage.getItem("idAutor") !== el.autorId.id
+                                ? el.autorId.updatedAt
+                                : el.partnerId.updatedAt
+                            );
+
                             this.props.allMessageOneUser(
                               String(el.autorId.id),
                               String(el.partnerId.id)
@@ -232,6 +260,8 @@ class MyProfile1 extends Component {
                         >
                           <ChatGroup
                             id={el.id}
+                            autorId={el.autorId.id}
+                            partnerOnline={el.partnerId.online}
                             avatar={
                               +localStorage.getItem("idAutor") !== el.autorId.id
                                 ? el.autorId.avatar
@@ -242,8 +272,14 @@ class MyProfile1 extends Component {
                                 ? el.autorId.login
                                 : el.partnerId.login
                             }
+                            online={
+                              +localStorage.getItem("idAutor") !== el.autorId.id
+                                ? el.autorId.online
+                                : el.partnerId.online
+                            }
                             lastMessage={el.lastMessage}
                             updatedAt={el.updatedAt}
+                            
                             addedName={
                               this.state.activeTab === el.id
                                 ? "active"
@@ -293,6 +329,7 @@ const ConnectedMyProfile = connect(
     allMessageOneUser: actionAllMessageOneUser,
     allMessage: actionAllMessage,
     onLogin: actionLogin,
+    userOnline: actionUserOnline,
   }
 )(MyProfile1);
 

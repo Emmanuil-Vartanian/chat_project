@@ -37,10 +37,7 @@ class Messages extends Component {
             </div>
           </span>
 
-          {/* <div className="message"> */}
-            <div className="message">{this.props.message}</div>
-            
-          {/* </div> */}
+          <div className="message">{this.props.message}</div>
         </div>
       </div>
     );

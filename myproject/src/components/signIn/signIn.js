@@ -8,9 +8,15 @@ import {
   EyeInvisibleOutlined,
 } from "@ant-design/icons";
 import jwtDecode from "jwt-decode";
+import io from "socket.io-client";
 
-import { actionLogin } from "./actionCreator/index";
+import history from "../../history";
+
+import { actionLogin, actionUserOnline } from "./actionCreator/index";
+import { actionAllChatsGroupOneUser } from "../myProfile/actionCreator/index";
 import "./signIn.css";
+
+const socket = io.connect("http://localhost:9999");
 
 class LoginForm extends Component {
   constructor(props) {
@@ -43,6 +49,8 @@ class LoginForm extends Component {
             localStorage.setItem("login", jwtDecodeUser.sub.login);
             localStorage.setItem("emailAutor", jwtDecodeUser.sub.email);
             localStorage.setItem("loginAutor", jwtDecodeUser.sub.login);
+            socket.emit("online", true);
+            this.props.userOnline(jwtDecodeUser.sub.id, true)
           } else {
             return (
               <div className="error">
@@ -65,81 +73,85 @@ class LoginForm extends Component {
   render() {
     return (
       <div className="login">
-        <div className="login-form" onKeyPress={this.buttonEnter}>
-          <div className="login-title">
-            <h2>Войти в аккаунт</h2>
-            <p>Пожалуйста, войдите в свой аккаунт</p>
-          </div>
-
-          <div className="login-icon icon">
-            <UserOutlined />
-            <input
-              id="login"
-              value={this.state.login}
-              placeholder="Логин"
-              type="text"
-              onChange={(e) => {
-                this.setState({ login: e.target.value });
-                this.setState({ backError: false });
-              }}
-            />
-          </div>
-
-          <div className="password-icon icon">
-            <LockOutlined />
-            <input
-              id="password"
-              value={this.state.password}
-              placeholder="Пароль"
-              type={this.state.loginEye}
-              onChange={(e) => {
-                this.setState({ password: e.target.value });
-                this.setState({ backError: false });
-              }}
-            />
-            <div
-              className="not-see"
-              style={
-                this.state.loginEye === "text"
-                  ? { display: "none" }
-                  : { display: "inline-block" }
-              }
-              onClick={() => this.loginEye("text")}
-            >
-              <EyeInvisibleOutlined />
+        {localStorage.allObj === undefined || localStorage.allObj === "" ? (
+          <div className="login-form" onKeyPress={this.buttonEnter}>
+            <div className="login-title">
+              <h2>Войти в аккаунт</h2>
+              <p>Пожалуйста, войдите в свой аккаунт</p>
             </div>
 
-            <div
-              className="see"
-              style={
-                this.state.loginEye === "password"
-                  ? { display: "none" }
-                  : { display: "inline-block" }
-              }
-              onClick={() => this.loginEye("password")}
+            <div className="login-icon icon">
+              <UserOutlined />
+              <input
+                id="login"
+                value={this.state.login}
+                placeholder="Логин"
+                type="text"
+                onChange={(e) => {
+                  this.setState({ login: e.target.value });
+                  this.setState({ backError: false });
+                }}
+              />
+            </div>
+
+            <div className="password-icon icon">
+              <LockOutlined />
+              <input
+                id="password"
+                value={this.state.password}
+                placeholder="Пароль"
+                type={this.state.loginEye}
+                onChange={(e) => {
+                  this.setState({ password: e.target.value });
+                  this.setState({ backError: false });
+                }}
+              />
+              <div
+                className="not-see"
+                style={
+                  this.state.loginEye === "text"
+                    ? { display: "none" }
+                    : { display: "inline-block" }
+                }
+                onClick={() => this.loginEye("text")}
+              >
+                <EyeInvisibleOutlined />
+              </div>
+
+              <div
+                className="see"
+                style={
+                  this.state.loginEye === "password"
+                    ? { display: "none" }
+                    : { display: "inline-block" }
+                }
+                onClick={() => this.loginEye("password")}
+              >
+                <EyeOutlined />
+              </div>
+            </div>
+
+            {this.state.backError ? this.way("login", "getLogin") : null}
+
+            <button
+              className="login-button"
+              onClick={() => {
+                this.props.onLogin(this.state.login, this.state.password);
+                this.setState({ backError: true });
+              }}
+              disabled={!this.state.login || !this.state.password}
             >
-              <EyeOutlined />
+              Войти
+            </button>
+
+            <div className="register-put-password">
+              <Link to="/sign_up">Зарегистрироваться</Link>
+              <Link to="/put_password">Забыли пароль?</Link>
             </div>
           </div>
-
-          {this.state.backError ? this.way("login", "getLogin") : null}
-
-          <button
-            className="login-button"
-            onClick={() => {
-              this.props.onLogin(this.state.login, this.state.password);
-              this.setState({ backError: true });
-            }}
-            disabled={!this.state.login || !this.state.password}
-          >
-            Войти
-          </button>
-
-          <div className="register-put-password">
-            <Link to="/sign_up">Зарегистрироваться</Link>
-            <Link to="/put_password">Забыли пароль?</Link>
-          </div>
-        </div>
+        ) : (
+          history.push("/my_profile")
+        )}
       </div>
     );
   }
@@ -151,7 +163,7 @@ const ConnectedLoginForm = connect(
   (state) => {
     return { state };
   },
-  { onLogin: actionLogin }
+  { onLogin: actionLogin, userOnline: actionUserOnline, allChatsGroupOneUser: actionAllChatsGroupOneUser, }
 )(LoginForm);
 
 export default Login;

@@ -5,9 +5,9 @@ const actionAllChatsgroupOneUserPromise = (id) => {
     `query chatOneUser($id: ID!) {
       getAllChatGroupOneUser(id: $id) {
         id, updatedAt, lastMessage, autorId {
-          id, login, avatar
+          id, login, avatar, online, updatedAt
         }, partnerId {
-          id, login, avatar
+          id, login, avatar, online, updatedAt
         }
       }
     }`,

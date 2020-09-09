@@ -73,7 +73,12 @@ io.sockets.on("connection", (socket) => {
   socket.on("create chat", (data) => {
     io.sockets.emit("add chat", { chat: data });
   });
-});
+
+  socket.on("online", (data) => {
+    console.log(data);
+    io.sockets.emit("add online", { online: data });
+  });
+})
 
 // sequelize.sync()
 

@@ -22,7 +22,7 @@ function actionChangeAvatarPromise(id, avatar) {
   let promise = getGQL("http://localhost:9999/graphql")(
     `mutation changeAvatar($id: ID!, $avatar: String) {
       changeAvatar(id: $id, avatar: $avatar) {
-       id, createdAt, email, login, avatar
+       id, createdAt, email, login, avatar, online
       } 
      }`,
     { id, avatar }

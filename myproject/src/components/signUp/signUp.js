@@ -5,6 +5,8 @@ import { connect } from "react-redux";
 import { actionRegister, actionCreateImage } from "./actionCreator/index";
 import "./signUp.css";
 
+import history from "../../history";
+
 class Register1 extends Component {
   constructor(props) {
     super(props);
@@ -56,159 +58,163 @@ class Register1 extends Component {
   render() {
     return (
       <div className="register">
-        <div className="register-form" onKeyPress={this.buttonEnter}>
-          <div className="login-title">
-            <h2>Создать свой аккаунт</h2>
-            <p>Пожалуйста, создайте свой аккаунт</p>
-          </div>
-
-          <div className="block-input">
-            <span>E-mail:</span>
-            <input
-              value={this.state.registerEmail}
-              type="email"
-              id="registerEmail"
-              name="email"
-              onChange={(e) => {
-                this.setState({ registerEmail: e.target.value });
-                this.setState({ backErrorEmail: false });
-                const repeatEmail = document.querySelector(".repeat-email");
-                repeatEmail.style.display = "none";
-              }}
-            />
-          </div>
-
-          {this.state.backErrorEmail ? (
-            <div className="pattern-email">
-              <p></p>
-              <div>
-                <p>Неверный формат почты</p>
-              </div>
+        {localStorage.allObj === "" ? (
+          <div className="register-form" onKeyPress={this.buttonEnter}>
+            <div className="login-title">
+              <h2>Создать свой аккаунт</h2>
+              <p>Пожалуйста, создайте свой аккаунт</p>
             </div>
-          ) : null}
 
-          <div className="repeat-email">
-            <p></p>
-            <div>
-              <p>Аккаунт с такой почтой уже зарегестрирован</p>
-            </div>
-          </div>
-
-          <div className="block-input">
-            <span>Логин:</span>
-            <input
-              value={this.state.login}
-              type="text"
-              id="loginCreate"
-              name="login"
-              onChange={(e) => this.setState({ login: e.target.value })}
-            />
-          </div>
-
-          <div className="block-input">
-            <span>Пароль:</span>
-            <div className="password-block">
+            <div className="block-input">
+              <span>E-mail:</span>
               <input
-                value={this.state.registerPassword}
-                type={this.state.registerEye}
-                id="registerPassword"
-                name="password"
+                value={this.state.registerEmail}
+                type="email"
+                id="registerEmail"
+                name="email"
                 onChange={(e) => {
-                  this.setState({ registerPassword: e.target.value });
-                  this.setState({ backErrorPassword: false });
+                  this.setState({ registerEmail: e.target.value });
+                  this.setState({ backErrorEmail: false });
+                  const repeatEmail = document.querySelector(".repeat-email");
+                  repeatEmail.style.display = "none";
                 }}
               />
-              <div
-                className="not-see"
-                style={
-                  this.state.registerEye === "text"
-                    ? { display: "none" }
-                    : { display: "inline-block" }
-                }
-                onClick={() => this.registerEye("text")}
-              >
-                <EyeInvisibleOutlined />
-              </div>
-              <div
-                className="see"
-                style={
-                  this.state.registerEye === "password"
-                    ? { display: "none" }
-                    : { display: "inline-block" }
-                }
-                onClick={() => this.registerEye("password")}
-              >
-                <EyeOutlined />
-              </div>
             </div>
-          </div>
 
-          <div className="block-input">
-            <span>Повторите пароль:</span>
-            <div className="confirmPassword-block">
-              <input
-                value={this.state.confirmPassword}
-                type={this.state.registerConfirmEye}
-                id="confirmPassword"
-                name="confirmPassword"
-                onChange={(e) => {
-                  this.setState({ confirmPassword: e.target.value });
-                  this.setState({ backErrorPassword: false });
-                }}
-              />
-              <div
-                className="not-see-confirm"
-                style={
-                  this.state.registerConfirmEye === "text"
-                    ? { display: "none" }
-                    : { display: "inline-block" }
-                }
-                onClick={() => this.registerConfirmEye("text")}
-              >
-                <EyeInvisibleOutlined />
+            {this.state.backErrorEmail ? (
+              <div className="pattern-email">
+                <p></p>
+                <div>
+                  <p>Неверный формат почты</p>
+                </div>
               </div>
-              <div
-                className="see-confirm"
-                style={
-                  this.state.registerConfirmEye === "password"
-                    ? { display: "none" }
-                    : { display: "inline-block" }
-                }
-                onClick={() => this.registerConfirmEye("password")}
-              >
-                <EyeOutlined />
-              </div>
-            </div>
-          </div>
+            ) : null}
 
-          {this.state.backErrorPassword ? (
-            <div className="pattern-password">
+            <div className="repeat-email">
               <p></p>
               <div>
-                <p>Пароли не совпадают</p>
+                <p>Аккаунт с такой почтой уже зарегестрирован</p>
               </div>
             </div>
-          ) : null}
 
-          <div className="block-input-btn">
-            <p></p>
-            <button
-              onClick={() => {
-                this.validateAndRegister();
-              }}
-              disabled={
-                !this.state.registerEmail ||
-                !this.state.registerPassword ||
-                !this.state.confirmPassword ||
-                !this.state.login
-              }
-            >
-              Регистрация
-            </button>
+            <div className="block-input">
+              <span>Логин:</span>
+              <input
+                value={this.state.login}
+                type="text"
+                id="loginCreate"
+                name="login"
+                onChange={(e) => this.setState({ login: e.target.value })}
+              />
+            </div>
+
+            <div className="block-input">
+              <span>Пароль:</span>
+              <div className="password-block">
+                <input
+                  value={this.state.registerPassword}
+                  type={this.state.registerEye}
+                  id="registerPassword"
+                  name="password"
+                  onChange={(e) => {
+                    this.setState({ registerPassword: e.target.value });
+                    this.setState({ backErrorPassword: false });
+                  }}
+                />
+                <div
+                  className="not-see"
+                  style={
+                    this.state.registerEye === "text"
+                      ? { display: "none" }
+                      : { display: "inline-block" }
+                  }
+                  onClick={() => this.registerEye("text")}
+                >
+                  <EyeInvisibleOutlined />
+                </div>
+                <div
+                  className="see"
+                  style={
+                    this.state.registerEye === "password"
+                      ? { display: "none" }
+                      : { display: "inline-block" }
+                  }
+                  onClick={() => this.registerEye("password")}
+                >
+                  <EyeOutlined />
+                </div>
+              </div>
+            </div>
+
+            <div className="block-input">
+              <span>Повторите пароль:</span>
+              <div className="confirmPassword-block">
+                <input
+                  value={this.state.confirmPassword}
+                  type={this.state.registerConfirmEye}
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  onChange={(e) => {
+                    this.setState({ confirmPassword: e.target.value });
+                    this.setState({ backErrorPassword: false });
+                  }}
+                />
+                <div
+                  className="not-see-confirm"
+                  style={
+                    this.state.registerConfirmEye === "text"
+                      ? { display: "none" }
+                      : { display: "inline-block" }
+                  }
+                  onClick={() => this.registerConfirmEye("text")}
+                >
+                  <EyeInvisibleOutlined />
+                </div>
+                <div
+                  className="see-confirm"
+                  style={
+                    this.state.registerConfirmEye === "password"
+                      ? { display: "none" }
+                      : { display: "inline-block" }
+                  }
+                  onClick={() => this.registerConfirmEye("password")}
+                >
+                  <EyeOutlined />
+                </div>
+              </div>
+            </div>
+
+            {this.state.backErrorPassword ? (
+              <div className="pattern-password">
+                <p></p>
+                <div>
+                  <p>Пароли не совпадают</p>
+                </div>
+              </div>
+            ) : null}
+
+            <div className="block-input-btn">
+              <p></p>
+              <button
+                onClick={() => {
+                  this.validateAndRegister();
+                }}
+                disabled={
+                  !this.state.registerEmail ||
+                  !this.state.registerPassword ||
+                  !this.state.confirmPassword ||
+                  !this.state.login
+                }
+              >
+                Регистрация
+              </button>
+            </div>
           </div>
-        </div>
+        ) : (
+          history.push("/my_profile")
+        )}
       </div>
-    )
+    );
   }
 }
 

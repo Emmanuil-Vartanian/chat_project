@@ -14,8 +14,29 @@ const actionLoginPromise = (login, password) => {
 const actionLogin = (login, password) => {
   return async (dispatch) => {
     var token = await dispatch(actionLoginPromise(login, password));
-    if (token.data.getLogin !== null) history.push("/my_profile");
+    if (token.data.getLogin !== null) {
+      history.push("/my_profile");
+    }
   };
 };
 
-export { actionLogin };
+const actionUserOnlinePromise = (id, online) => {
+  var promise = getGQL("http://localhost:9999/graphql")(
+    `mutation changeOnline($id: ID!, $online: Boolean) {
+      changeOnline(id: $id, online: $online) {
+        id, email, login, avatar, online
+      }
+    }`,
+    { id, online }
+  );
+  return actionPromise("login", promise);
+};
+
+const actionUserOnline = (id, online) => {
+  return async (dispatch) => {
+    var token = await dispatch(actionUserOnlinePromise(id, online));
+    console.log(token);
+  };
+};
+
+export { actionLogin, actionUserOnline };

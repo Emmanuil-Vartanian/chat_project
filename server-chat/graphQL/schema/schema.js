@@ -14,6 +14,7 @@ var schema = buildSchema(`
   }
   type Mutation {
     createUser(email: String, login: String, password: String, avatar: String): User
+    changeOnline(id: ID!, online: Boolean): User
     changePassword(email: String, password: String): User
     changeAvatar(id: ID!, avatar: String): User
     createMessage(message: String, autorId: String, partnerId: String): Message
@@ -24,9 +25,11 @@ var schema = buildSchema(`
   type User {
     id: Int
     createdAt: String
+    updatedAt: String
     email: String
     login: String
     avatar: String
+    online: Boolean
   }
   type Message {
     id: Int
