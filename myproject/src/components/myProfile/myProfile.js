@@ -71,6 +71,18 @@ class MyProfile1 extends Component {
     }
   }
 
+  userStatusOnline() {
+    window.onload = () => {
+      this.props.userOnline(localStorage.getItem("idAutor"), true);
+      socket.emit("online", true);
+    };
+
+    window.onunload = () => {
+      this.props.userOnline(localStorage.getItem("idAutor"), false);
+      socket.emit("online", false);
+    };
+  }
+
   componentDidMount() {
     const idAutor = localStorage.getItem("idAutor");
     this.props.allChatsGroupOneUser(idAutor);
@@ -78,13 +90,19 @@ class MyProfile1 extends Component {
     history.push(`/my_profile`);
 
     socket.on("add online", () => {
-      // this.props.allMessageOneUser(
-      //   localStorage.getItem("autorMessId"),
-      //   localStorage.getItem("partnerMessId")
-      // );
       const idAutor = localStorage.getItem("idAutor");
       this.props.allChatsGroupOneUser(idAutor);
     });
+
+    this.userStatusOnline();
+
+    localStorage.setItem(
+      "userStatusOnline",
+      (window.onload = () => {
+        this.props.userOnline(localStorage.getItem("idAutor"), true);
+        socket.emit("online", true);
+      })
+    );
   }
 
   render() {
@@ -181,6 +199,13 @@ class MyProfile1 extends Component {
                             String(el.id)
                           );
 
+                          localStorage.setItem(
+                            "onlinePartner",
+                            +localStorage.getItem("idAutor") !== el.autorId.id
+                              ? el.autorId.online
+                              : el.partnerId.online
+                          );
+
                           socket.emit("create chat", "");
 
                           const idAutor = localStorage.getItem("idAutor");
@@ -199,6 +224,7 @@ class MyProfile1 extends Component {
                           addedName={
                             this.state.activeTab === el.id ? "active" : "groups"
                           }
+                          online={el.online}
                         />
                       </div>
                     ))
@@ -219,13 +245,13 @@ class MyProfile1 extends Component {
                                 : el.partnerId.login
                             );
                             localStorage.setItem(
-                              "idAutor",
+                              "idAutorForMessage",
                               +localStorage.getItem("idAutor") === el.autorId.id
                                 ? el.autorId.id
                                 : el.partnerId.id
                             );
                             localStorage.setItem(
-                              "idPartner",
+                              "idPartnerForMessage",
                               +localStorage.getItem("idAutor") !== el.autorId.id
                                 ? el.autorId.id
                                 : el.partnerId.id
@@ -260,8 +286,6 @@ class MyProfile1 extends Component {
                         >
                           <ChatGroup
                             id={el.id}
-                            autorId={el.autorId.id}
-                            partnerOnline={el.partnerId.online}
                             avatar={
                               +localStorage.getItem("idAutor") !== el.autorId.id
                                 ? el.autorId.avatar
@@ -279,7 +303,6 @@ class MyProfile1 extends Component {
                             }
                             lastMessage={el.lastMessage}
                             updatedAt={el.updatedAt}
-                            
                             addedName={
                               this.state.activeTab === el.id
                                 ? "active"

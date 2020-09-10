@@ -12,6 +12,7 @@ import "emoji-mart/css/emoji-mart.css";
 import date from "../../../date/date";
 
 import Messages from "./messages/messages";
+import oneUserMessages from './oneUserMessages/oneUserMessages';
 import { actionAllChatsGroupOneUser } from "../actionCreator/index";
 import {
   actionAllMessageOneUser,
@@ -46,8 +47,8 @@ class ChatMessageInfo extends Component {
       socket.emit("send mess", this.state.sendMessage);
       this.props.createMessage(
         this.state.sendMessage,
-        localStorage.getItem("idAutor"),
-        localStorage.getItem("idPartner")
+        localStorage.getItem("idAutorForMessage"),
+        localStorage.getItem("idPartnerForMessage")
       );
       this.props.changeLastMessage(
         localStorage.getItem("idChatGroup"),
@@ -81,6 +82,13 @@ class ChatMessageInfo extends Component {
               </div>
             );
           }
+          const penultArrayMess = allObj[allObj.length - 2];
+          const lastArrayMess = allObj[allObj.length - 1];
+          localStorage.setItem("lastArrayMess", lastArrayMess.autorId.login);
+          localStorage.setItem(
+            "penultArrayMess",
+            penultArrayMess.autorId.login
+          );
           return allObj.map(a);
         } else if (stateObj[keys] === "PENDING") {
           return (
@@ -95,18 +103,6 @@ class ChatMessageInfo extends Component {
               </div>
             </div>
           );
-        }
-      }
-    }
-  }
-
-  way2(obj, resolverName, a) {
-    const stateObj = this.props.state[obj];
-    for (var keys in stateObj) {
-      for (var keyData in stateObj[keys]) {
-        if (keyData === "data") {
-          const allObj = stateObj[keys][keyData][resolverName];
-          if (allObj) return allObj;
         }
       }
     }
@@ -135,9 +131,12 @@ class ChatMessageInfo extends Component {
       <>
         <div className="loginPartner">
           {localStorage.getItem("loginPartner")}
-          {localStorage.getItem("onlinePartner") === "false"
-            ? " был(а) в сети " + date(localStorage.getItem("updatedAtPartner"), "forChatGroups")
-            : <span style={{color: "green"}}> онлайн</span>}
+          {localStorage.getItem("onlinePartner") === "false" ? (
+            " был(а) в сети " +
+            date(localStorage.getItem("updatedAtPartner"), "forChatGroups")
+          ) : (
+            <span style={{ color: "#03c603" }}> онлайн</span>
+          )}
         </div>
 
         <div className="chatMessages">
@@ -147,8 +146,11 @@ class ChatMessageInfo extends Component {
               this.messagesContainer = el;
             }}
           >
+            {console.log(localStorage.getItem("lastArrayMess"))}
+            {console.log(localStorage.getItem("penultArrayMess"))}
             {this.way("allMessageOneUser", "getAllMessagesOneUser", (el) => {
-              return (
+              return localStorage.getItem("lastArrayMess") !==
+                localStorage.getItem("penultArrayMess") ? (
                 <Messages
                   key={el.id}
                   createdAt={el.createdAt}
@@ -157,6 +159,14 @@ class ChatMessageInfo extends Component {
                   partnerLogin={el.partnerId.login}
                   autorAvatar={el.autorId.avatar}
                   partnerAvatar={el.partnerId.avatar}
+                />
+              ) : (
+                <oneUserMessages
+                  key={el.id}
+                  createdAt={el.createdAt}
+                  message={el.message}
+                  autorLogin={el.autorId.login}
+                  partnerLogin={el.partnerId.login}
                 />
               );
             })}
@@ -186,8 +196,8 @@ class ChatMessageInfo extends Component {
 
                 this.props.createMessage(
                   this.state.sendMessage,
-                  localStorage.getItem("idAutor"),
-                  localStorage.getItem("idPartner")
+                  localStorage.getItem("idAutorForMessage"),
+                  localStorage.getItem("idPartnerForMessage")
                 );
 
                 setTimeout(() => {

@@ -48,7 +48,7 @@ const actionOneUserPromise = (login) => {
   var promise = getGQL("http://localhost:9999/graphql")(
     `query oneUser($login: String) {
       getOneUser(login: $login) {
-        id, email, login, avatar
+        id, email, login, avatar, online
       }
     }`,
     { login }

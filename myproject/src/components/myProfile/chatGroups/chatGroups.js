@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import io from "socket.io-client";
 
 import date from "../../../date/date";
 import { actionAllImagesOneUser, actionAllImages } from "./actionCreator/index";
@@ -9,13 +8,10 @@ import { actionAllMessageOneUser } from "../chatMessage/actionCreator/index";
 
 import "./chatGroups.css";
 
-const socket = io.connect("http://localhost:9999");
-
 class ChatGroupBar extends Component {
   constructor(props) {
     super(props);
     this.state = { online: this.props.online };
-    // localStorage.setItem("onlinePartner", this.props.online)
   }
 
   way(obj, resolverName, a) {
@@ -28,17 +24,6 @@ class ChatGroupBar extends Component {
         }
       }
     }
-  }
-
-  componentDidMount() {
-    // socket.on("add online", () => {
-    //   // this.props.allMessageOneUser(
-    //   //   localStorage.getItem("autorMessId"),
-    //   //   localStorage.getItem("partnerMessId")
-    //   // );
-    //   const idAutor = localStorage.getItem("idAutor");
-    //   this.props.allChatsGroupOneUser(idAutor);
-    // });
   }
 
   render() {
