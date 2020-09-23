@@ -88,7 +88,7 @@ class LoginForm extends Component {
                 placeholder="Логин"
                 type="text"
                 onChange={(e) => {
-                  this.setState({ login: e.target.value });
+                  this.setState({ login: e.target.value })
                   this.setState({ backError: false });
                 }}
               />

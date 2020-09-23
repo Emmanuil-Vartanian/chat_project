@@ -172,6 +172,7 @@ class MyProfile1 extends Component {
               <div className="chat-groups">
                 {this.state.foundUser
                   ? this.way("oneUser", "getOneUser", (el) => (
+                    console.log(el),
                       <div
                         key={el.id}
                         onClick={() => {
@@ -198,12 +199,16 @@ class MyProfile1 extends Component {
                             String(+localStorage.getItem("idAutor")),
                             String(el.id)
                           );
+// console.log(el.autorId.id);
+                          // localStorage.setItem(
+                          //   "onlinePartner",
+                          //   +localStorage.getItem("idAutor") !== el.autorId.id
+                          //     ? el.autorId.online
+                          //     : el.partnerId.online
+                          // );
 
                           localStorage.setItem(
-                            "onlinePartner",
-                            +localStorage.getItem("idAutor") !== el.autorId.id
-                              ? el.autorId.online
-                              : el.partnerId.online
+                            "onlinePartner", el.online
                           );
 
                           socket.emit("create chat", "");
@@ -274,7 +279,7 @@ class MyProfile1 extends Component {
                               +localStorage.getItem("idAutor") !== el.autorId.id
                                 ? el.autorId.updatedAt
                                 : el.partnerId.updatedAt
-                            );
+                            )
 
                             this.props.allMessageOneUser(
                               String(el.autorId.id),

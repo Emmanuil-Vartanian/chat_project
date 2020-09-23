@@ -58,7 +58,7 @@ class PutPasswordForm extends Component {
     if (e.key === "Enter") {
       this.state.confirmNewPassword === this.state.newPassword
         ? this.props.putPassword(this.state.email, this.state.newPassword)
-        : this.setState({ backErrorPassword: true });
+        : this.setState({ backErrorPassword: true })
     }
   };
 

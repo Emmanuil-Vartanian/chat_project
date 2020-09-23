@@ -1,12 +1,22 @@
 .containerMessageAutor,
 .containerMessagePartner {
-  margin-bottom: 20px;
   min-height: 50px;
+  padding: 10px 0;
 }
 
 .containerMessageAutor {
   display: flex;
   flex-direction: row-reverse;
+}
+
+.containerMessageAutor:hover,
+.containerMessagePartner:hover {
+  background: #eaf3fb;
+  cursor: pointer;
+}
+
+#onMessageSelected {
+  background: #eaf3fb;
 }
 
 .infoMessageAutor {

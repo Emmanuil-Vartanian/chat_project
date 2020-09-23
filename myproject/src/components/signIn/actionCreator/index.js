@@ -14,6 +14,7 @@ const actionLoginPromise = (login, password) => {
 const actionLogin = (login, password) => {
   return async (dispatch) => {
     var token = await dispatch(actionLoginPromise(login, password));
+    console.log(token);
     if (token.data.getLogin !== null) {
       history.push("/my_profile");
     }
@@ -34,8 +35,7 @@ const actionUserOnlinePromise = (id, online) => {
 
 const actionUserOnline = (id, online) => {
   return async (dispatch) => {
-    var token = await dispatch(actionUserOnlinePromise(id, online));
-    console.log(token);
+    await dispatch(actionUserOnlinePromise(id, online));
   };
 };
 

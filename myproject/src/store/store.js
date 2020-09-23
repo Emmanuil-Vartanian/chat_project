@@ -74,3 +74,4 @@ const store = createStore(
 store.subscribe(() => console.log(store.getState()));
 
 export { store, actionPromise, getGQL };
+

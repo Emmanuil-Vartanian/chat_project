@@ -87,3 +87,10 @@
 .emoji-mart-anchor {
   cursor: pointer;
 }
+
+.messageSettings {
+  margin-top: 20px;
+  text-transform: uppercase;
+  display: flex;
+  justify-content: space-between;
+}

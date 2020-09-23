@@ -1,15 +1,43 @@
 import React, { Component } from "react";
+import io from "socket.io-client";
 
 import date from "../../../../date/date";
 
 import "./messages.css";
 
+const socket = io.connect("http://localhost:9999");
+
 class Messages extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      messageSelected: false,
+      newMessage: this.props.message,
+    };
+  }
+
+  componentDidMount() {
+    this.setState({ newMessage: this.props.message });
+  }
+
   render() {
     return (
       <>
         {this.props.autorLogin !== localStorage.getItem("loginPartner") ? (
-          <div className="containerMessageAutor">
+          <div
+            className="containerMessageAutor"
+            id={
+              !this.state.messageSelected
+                ? "messageSelected"
+                : "onMessageSelected"
+            }
+            onClick={(e) => {
+              this.setState({ messageSelected: !this.state.messageSelected });
+              setTimeout(() => {
+                this.props.updateDate(this.state.messageSelected);
+              }, 0);
+            }}
+          >
             <div className="infoMessageAutor">
               <div className="avatarMessage">
                 {this.props.autorAvatar !== "" &&
@@ -44,7 +72,8 @@ class Messages extends Component {
                   </span>
 
                   <div className="messageAutor">
-                    <span>{this.props.message}</span>
+                    <span>{this.state.newMessage}</span>
+                    {/* <span>{this.props.message}</span> */}
                     <div className="dateMessage">
                       {date(this.props.createdAt, "forMessages")}
                     </div>
@@ -54,7 +83,20 @@ class Messages extends Component {
             </div>
           </div>
         ) : (
-          <div className="containerMessagePartner">
+          <div
+            className="containerMessagePartner"
+            id={
+              !this.state.messageSelected
+                ? "messageSelected"
+                : "onMessageSelected"
+            }
+            onClick={() => {
+              this.setState({ messageSelected: !this.state.messageSelected });
+              setTimeout(() => {
+                this.props.updateDate(this.state.messageSelected);
+              }, 0);
+            }}
+          >
             <div className="avatar">
               {this.props.autorAvatar !== "" &&
               this.props.partnerAvatar !== "" ? (
@@ -83,7 +125,8 @@ class Messages extends Component {
               </span>
 
               <div className="message">
-                <span>{this.props.message}</span>
+                <span>{this.state.newMessage}</span>
+                {/* <span>{this.props.message}</span> */}
                 <div className="dateMessage">
                   {date(this.props.createdAt, "forMessages")}
                 </div>

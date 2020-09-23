@@ -12,7 +12,6 @@ import "emoji-mart/css/emoji-mart.css";
 import date from "../../../date/date";
 
 import Messages from "./messages/messages";
-import oneUserMessages from './oneUserMessages/oneUserMessages';
 import { actionAllChatsGroupOneUser } from "../actionCreator/index";
 import {
   actionAllMessageOneUser,
@@ -30,6 +29,9 @@ class ChatMessageInfo extends Component {
     this.state = {
       sendMessage: "",
       windowEmoji: false,
+      messageWriteNow: false,
+      messageSelected: [],
+      messageSettings: false,
     };
 
     socket.on("add mess", () => {
@@ -41,6 +43,16 @@ class ChatMessageInfo extends Component {
       this.props.allChatsGroupOneUser(idAutor);
     });
   }
+
+  updateDate = (value) => {
+    this.setState({
+      messageSelected: [...this.state.messageSelected, value],
+    });
+    if (value === false) {
+      this.state.messageSelected.pop();
+      this.state.messageSelected.shift();
+    }
+  };
 
   buttonEnter = (e) => {
     if (e.key === "Enter") {
@@ -82,13 +94,6 @@ class ChatMessageInfo extends Component {
               </div>
             );
           }
-          const penultArrayMess = allObj[allObj.length - 2];
-          const lastArrayMess = allObj[allObj.length - 1];
-          localStorage.setItem("lastArrayMess", lastArrayMess.autorId.login);
-          localStorage.setItem(
-            "penultArrayMess",
-            penultArrayMess.autorId.login
-          );
           return allObj.map(a);
         } else if (stateObj[keys] === "PENDING") {
           return (
@@ -116,14 +121,21 @@ class ChatMessageInfo extends Component {
   componentDidMount() {
     this.scrollToBottom();
     socket.on("add online", (data) => {
-      console.log(data);
       const idAutor = localStorage.getItem("idAutor");
       this.props.allChatsGroupOneUser(idAutor);
     });
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(preProps, preState) {
     this.scrollToBottom();
+  }
+
+  messageSettingsOrInput() {
+    setTimeout(() => {
+      this.state.messageSelected.length === 0
+        ? this.setState({ messageSettings: true })
+        : this.setState({ messageSettings: false });
+    }, 0);
   }
 
   render() {
@@ -142,15 +154,11 @@ class ChatMessageInfo extends Component {
         <div className="chatMessages">
           <div
             className="messagesBlock"
-            ref={(el) => {
-              this.messagesContainer = el;
-            }}
+            ref={(el) => (this.messagesContainer = el)}
           >
-            {console.log(localStorage.getItem("lastArrayMess"))}
-            {console.log(localStorage.getItem("penultArrayMess"))}
             {this.way("allMessageOneUser", "getAllMessagesOneUser", (el) => {
-              return localStorage.getItem("lastArrayMess") !==
-                localStorage.getItem("penultArrayMess") ? (
+              // console.log(el);
+              return (
                 <Messages
                   key={el.id}
                   createdAt={el.createdAt}
@@ -159,69 +167,74 @@ class ChatMessageInfo extends Component {
                   partnerLogin={el.partnerId.login}
                   autorAvatar={el.autorId.avatar}
                   partnerAvatar={el.partnerId.avatar}
-                />
-              ) : (
-                <oneUserMessages
-                  key={el.id}
-                  createdAt={el.createdAt}
-                  message={el.message}
-                  autorLogin={el.autorId.login}
-                  partnerLogin={el.partnerId.login}
+                  updateDate={this.updateDate}
                 />
               );
             })}
           </div>
 
-          <div className="sendMessage" onKeyPress={this.buttonEnter}>
-            {this.state.windowEmoji && (
-              <div className="emojiOn">
-                <Picker set="apple" />
-              </div>
-            )}
+          {this.messageSettingsOrInput()}
+          {this.state.messageSettings ? (
+            <div className="sendMessage" onKeyPress={this.buttonEnter}>
+              {this.state.windowEmoji && (
+                <div className="emojiOn">
+                  <Picker set="apple" />
+                </div>
+              )}
 
-            <SmileOutlined
-              className="smiles"
-              onClick={() =>
-                this.setState({ windowEmoji: !this.state.windowEmoji })
-              }
-            />
-            <input
-              type="text"
-              value={this.state.sendMessage}
-              onChange={(e) => this.setState({ sendMessage: e.target.value })}
-            />
-            <button
-              onClick={() => {
-                socket.emit("send mess", this.state.sendMessage);
+              <SmileOutlined
+                className="smiles"
+                onClick={() =>
+                  this.setState({ windowEmoji: !this.state.windowEmoji })
+                }
+              />
+              <input
+                type="text"
+                value={this.state.sendMessage}
+                onChange={(e) => {
+                  this.setState({ sendMessage: e.target.value });
+                  this.setState({ messageWriteNow: true });
+                }}
+              />
+              <button
+                onClick={() => {
+                  socket.emit("send mess", this.state.sendMessage);
 
-                this.props.createMessage(
-                  this.state.sendMessage,
-                  localStorage.getItem("idAutorForMessage"),
-                  localStorage.getItem("idPartnerForMessage")
-                );
-
-                setTimeout(() => {
-                  const idAutor = localStorage.getItem("idAutor");
-                  this.props.allChatsGroupOneUser(idAutor);
-                  this.props.changeLastMessage(
-                    localStorage.getItem("idChatGroup"),
-                    this.state.sendMessage
+                  this.props.createMessage(
+                    this.state.sendMessage,
+                    localStorage.getItem("idAutorForMessage"),
+                    localStorage.getItem("idPartnerForMessage")
                   );
-                }, 0);
 
-                this.setState({ sendMessage: "" });
-              }}
-            >
-              Send
-            </button>
-          </div>
+                  setTimeout(() => {
+                    const idAutor = localStorage.getItem("idAutor");
+                    this.props.allChatsGroupOneUser(idAutor);
+                    this.props.changeLastMessage(
+                      localStorage.getItem("idChatGroup"),
+                      this.state.sendMessage
+                    );
+                  }, 0);
+
+                  this.setState({ sendMessage: "" });
+                }}
+              >
+                Send
+              </button>
+            </div>
+          ) : (
+            <div className="messageSettings">
+              <div>удалить</div>
+              <div>изменить</div>
+              <div>отмена</div>
+            </div>
+          )}
         </div>
       </>
     );
   }
 }
 
-const ChatMessage = (props) => <ConnectedChatMessage />;
+const ChatMessage = () => <ConnectedChatMessage />;
 
 const ConnectedChatMessage = connect(
   (state) => {
