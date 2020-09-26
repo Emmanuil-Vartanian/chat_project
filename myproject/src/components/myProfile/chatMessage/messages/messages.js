@@ -12,6 +12,7 @@ class Messages extends Component {
     super(props);
     this.state = {
       messageSelected: false,
+      messageSelectedId: [],
       newMessage: this.props.message,
     };
   }
@@ -33,9 +34,17 @@ class Messages extends Component {
             }
             onClick={(e) => {
               this.setState({ messageSelected: !this.state.messageSelected });
+              this.setState({ messageSelectedId: this.props.id });
               setTimeout(() => {
-                this.props.updateDate(this.state.messageSelected);
+                // this.props.updateDate(this.state.messageSelectedId);
+                // this.props.updateDate(this.props.id);
+                this.props.updateDate({
+                  idMessage: this.props.id,
+                  messageForChanges: this.props.message,
+                });
               }, 0);
+              // localStorage.setItem("messageId", this.props.id);
+              // localStorage.setItem("changeMessage", this.props.message);
             }}
           >
             <div className="infoMessageAutor">
@@ -90,11 +99,19 @@ class Messages extends Component {
                 ? "messageSelected"
                 : "onMessageSelected"
             }
-            onClick={() => {
+            onClick={(e) => {
               this.setState({ messageSelected: !this.state.messageSelected });
+              this.setState({ messageSelectedId: this.props.id });
               setTimeout(() => {
-                this.props.updateDate(this.state.messageSelected);
+                // this.props.updateDate(this.state.messageSelectedId);
+                // this.props.updateDate(this.props.id);
+                this.props.updateDate({
+                  idMessage: this.props.id,
+                  messageForChanges: this.props.message,
+                });
               }, 0);
+              // localStorage.setItem("messageId", this.props.id);
+              // localStorage.setItem("changeMessage", this.props.message);
             }}
           >
             <div className="avatar">

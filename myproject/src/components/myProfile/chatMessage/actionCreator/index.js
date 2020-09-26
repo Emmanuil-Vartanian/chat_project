@@ -84,9 +84,45 @@ const actionChangeLastMessage = (id, lastMessage) => {
   };
 };
 
+const actionChangeMessagePromise = (id, message) => {
+  var promise = getGQL("http://localhost:9999/graphql")(
+    `mutation changeMessage($id: ID!, $message: String) {
+      changeMessage(id: $id, message: $message) {
+        id, message
+      }
+    }`,
+    { id, message }
+  );
+  return actionPromise("changeMessage", promise);
+};
+
+const actionChangeMessage = (id, message) => {
+  return async (dispatch) => {
+    await dispatch(actionChangeMessagePromise(id, message));
+  };
+};
+
+const actionDeleteMessagePromise = (id) => {
+  var promise = getGQL("http://localhost:9999/graphql")(
+    `mutation deleteMessage($id: [ID!]) {
+      deleteMessage(id: $id) 
+    }`,
+    { id }
+  );
+  return actionPromise("deleteMessage", promise);
+};
+
+const actionDeleteMessage = (id) => {
+  return async (dispatch) => {
+    await dispatch(actionDeleteMessagePromise(id));
+  };
+};
+
 export {
   actionAllMessageOneUser,
   actionCreateMessage,
   actionAllMessage,
   actionChangeLastMessage,
+  actionChangeMessage,
+  actionDeleteMessage,
 };

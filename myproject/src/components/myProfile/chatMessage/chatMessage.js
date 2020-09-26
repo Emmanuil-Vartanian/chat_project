@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import io from "socket.io-client";
 import { Picker } from "emoji-mart";
 
-import { SmileOutlined } from "@ant-design/icons";
+import { SmileOutlined, CloseOutlined } from "@ant-design/icons";
 
 import "./chatMessage.css";
 import "emoji-mart/css/emoji-mart.css";
@@ -18,6 +18,8 @@ import {
   actionCreateMessage,
   actionAllMessage,
   actionChangeLastMessage,
+  actionChangeMessage,
+  actionDeleteMessage,
 } from "./actionCreator/index";
 import dialogueIsEmpty from "../../../imagesForSite/dialogueIsEmpty.png";
 
@@ -31,7 +33,11 @@ class ChatMessageInfo extends Component {
       windowEmoji: false,
       messageWriteNow: false,
       messageSelected: [],
-      messageSettings: false,
+      messageSelectedResult: [],
+      messageSelectedMessage: "",
+      messageSettings: true,
+      messageSelectedForDeleteMessage: [],
+      messageSelectedForChangesMessage: true,
     };
 
     socket.on("add mess", () => {
@@ -44,33 +50,59 @@ class ChatMessageInfo extends Component {
     });
   }
 
-  updateDate = (value) => {
+  updateDate = ({ idMessage, messageForChanges }) => {
+    var messageSelectedResult = [];
+    this.setState({ messageSelectedMessage: messageForChanges });
+
     this.setState({
-      messageSelected: [...this.state.messageSelected, value],
+      messageSelected: [...this.state.messageSelected, idMessage],
     });
-    if (value === false) {
-      this.state.messageSelected.pop();
-      this.state.messageSelected.shift();
+
+    this.state.messageSelected.sort((a, b) => a - b);
+
+    for (var i = 0; i < this.state.messageSelected.length; i++) {
+      this.state.messageSelected[i] != this.state.messageSelected[i - 1] &&
+        this.state.messageSelected[i + 1] != this.state.messageSelected[i] &&
+        messageSelectedResult.push(this.state.messageSelected[i]);
     }
+
+    this.setState({ messageSelectedResult: messageSelectedResult });
+
+    if (!this.state.messageSelectedResult.length) {
+      this.setState({ messageSettings: true });
+      this.setState({ messageSelected: [] });
+    } else this.setState({ messageSettings: false });
   };
 
   buttonEnter = (e) => {
     if (e.key === "Enter") {
-      socket.emit("send mess", this.state.sendMessage);
-      this.props.createMessage(
-        this.state.sendMessage,
-        localStorage.getItem("idAutorForMessage"),
-        localStorage.getItem("idPartnerForMessage")
-      );
-      this.props.changeLastMessage(
-        localStorage.getItem("idChatGroup"),
-        this.state.sendMessage
-      );
-      setTimeout(() => {
-        const idAutor = localStorage.getItem("idAutor");
-        this.props.allChatsGroupOneUser(idAutor);
-      }, 0);
-      this.setState({ sendMessage: "" });
+      if (this.state.messageSelectedForChangesMessage) {
+        socket.emit("send mess", this.state.sendMessage);
+        this.props.createMessage(
+          this.state.sendMessage,
+          localStorage.getItem("idAutorForMessage"),
+          localStorage.getItem("idPartnerForMessage")
+        );
+        this.props.changeLastMessage(
+          localStorage.getItem("idChatGroup"),
+          this.state.sendMessage
+        );
+        setTimeout(() => {
+          const idAutor = localStorage.getItem("idAutor");
+          this.props.allChatsGroupOneUser(idAutor);
+        }, 0);
+        this.setState({ sendMessage: "" });
+      } else {
+        socket.emit("send mess", this.state.sendMessage);
+        this.props.changeMessage(
+          this.state.messageSelectedResult[0],
+          this.state.sendMessage
+        );
+        this.setState({ messageSelectedForChangesMessage: true });
+        this.setState({ sendMessage: "" });
+        this.setState({ messageSelected: [] });
+        this.setState({ messageSelectedResult: [] });
+      }
     }
   };
 
@@ -130,14 +162,6 @@ class ChatMessageInfo extends Component {
     this.scrollToBottom();
   }
 
-  messageSettingsOrInput() {
-    setTimeout(() => {
-      this.state.messageSelected.length === 0
-        ? this.setState({ messageSettings: true })
-        : this.setState({ messageSettings: false });
-    }, 0);
-  }
-
   render() {
     return (
       <>
@@ -157,11 +181,11 @@ class ChatMessageInfo extends Component {
             ref={(el) => (this.messagesContainer = el)}
           >
             {this.way("allMessageOneUser", "getAllMessagesOneUser", (el) => {
-              // console.log(el);
               return (
                 <Messages
                   key={el.id}
                   createdAt={el.createdAt}
+                  id={el.id}
                   message={el.message}
                   autorLogin={el.autorId.login}
                   partnerLogin={el.partnerId.login}
@@ -173,59 +197,177 @@ class ChatMessageInfo extends Component {
             })}
           </div>
 
-          {this.messageSettingsOrInput()}
           {this.state.messageSettings ? (
-            <div className="sendMessage" onKeyPress={this.buttonEnter}>
-              {this.state.windowEmoji && (
-                <div className="emojiOn">
-                  <Picker set="apple" />
-                </div>
-              )}
+            this.state.messageSelectedForChangesMessage ? (
+              <div className="sendMessage" onKeyPress={this.buttonEnter}>
+                {this.state.windowEmoji && (
+                  <div className="emojiOn">
+                    <Picker set="apple" />
+                  </div>
+                )}
 
-              <SmileOutlined
-                className="smiles"
-                onClick={() =>
-                  this.setState({ windowEmoji: !this.state.windowEmoji })
-                }
-              />
-              <input
-                type="text"
-                value={this.state.sendMessage}
-                onChange={(e) => {
-                  this.setState({ sendMessage: e.target.value });
-                  this.setState({ messageWriteNow: true });
-                }}
-              />
-              <button
-                onClick={() => {
-                  socket.emit("send mess", this.state.sendMessage);
+                <SmileOutlined
+                  className="smiles"
+                  onClick={() =>
+                    this.setState({ windowEmoji: !this.state.windowEmoji })
+                  }
+                />
+                <input
+                  type="text"
+                  value={this.state.sendMessage}
+                  onChange={(e) => {
+                    this.setState({ sendMessage: e.target.value });
+                    this.setState({ messageWriteNow: true });
+                  }}
+                />
+                <button
+                  onClick={() => {
+                    socket.emit("send mess", this.state.sendMessage);
 
-                  this.props.createMessage(
-                    this.state.sendMessage,
-                    localStorage.getItem("idAutorForMessage"),
-                    localStorage.getItem("idPartnerForMessage")
-                  );
-
-                  setTimeout(() => {
-                    const idAutor = localStorage.getItem("idAutor");
-                    this.props.allChatsGroupOneUser(idAutor);
-                    this.props.changeLastMessage(
-                      localStorage.getItem("idChatGroup"),
-                      this.state.sendMessage
+                    this.props.createMessage(
+                      this.state.sendMessage,
+                      localStorage.getItem("idAutorForMessage"),
+                      localStorage.getItem("idPartnerForMessage")
                     );
-                  }, 0);
 
-                  this.setState({ sendMessage: "" });
+                    setTimeout(() => {
+                      const idAutor = localStorage.getItem("idAutor");
+                      this.props.allChatsGroupOneUser(idAutor);
+                      this.props.changeLastMessage(
+                        localStorage.getItem("idChatGroup"),
+                        this.state.sendMessage
+                      );
+                    }, 0);
+
+                    this.setState({ sendMessage: "" });
+                  }}
+                >
+                  Send
+                </button>
+              </div>
+            ) : (
+              <>
+                <div className="editMessage">
+                  <div>
+                    <p>Hедактировать сообщение</p>
+                    <p>{this.state.messageSelectedMessage}</p>
+                  </div>
+                  <div className="iconClose">
+                    <CloseOutlined
+                      onClick={() => {
+                        // this.setState({ messageSelected: [] });
+                        this.setState({ messageSettings: true });
+                        // this.setState({ messageSelectedResult: [] });
+                        socket.emit("send mess", "");
+
+                        this.setState({
+                          messageSelectedForChangesMessage: true,
+                        });
+                        this.setState({ sendMessage: "" });
+                        this.setState({ messageSelected: [] });
+                        this.setState({ messageSelectedResult: [] });
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div className="sendMessage" onKeyPress={this.buttonEnter}>
+                  {this.state.windowEmoji && (
+                    <div className="emojiOn">
+                      <Picker set="apple" />
+                    </div>
+                  )}
+
+                  <SmileOutlined
+                    className="smiles"
+                    onClick={() =>
+                      this.setState({ windowEmoji: !this.state.windowEmoji })
+                    }
+                  />
+                  <input
+                    type="text"
+                    value={this.state.sendMessage}
+                    onChange={(e) => {
+                      this.setState({ sendMessage: e.target.value });
+                      // this.setState({ messageWriteNow: true });
+                    }}
+                  />
+                  <button
+                    onClick={() => {
+                      socket.emit("send mess", this.state.sendMessage);
+                      this.props.changeMessage(
+                        this.state.messageSelectedResult[0],
+                        this.state.sendMessage
+                      );
+                      this.setState({ messageSelectedForChangesMessage: true });
+                      this.setState({ sendMessage: "" });
+                      this.setState({ messageSelected: [] });
+                      this.setState({ messageSelectedResult: [] });
+                    }}
+                  >
+                    Send
+                  </button>
+                </div>
+              </>
+            )
+          ) : this.state.messageSelectedResult.length <= 1 ? (
+            <div className="messageSettings">
+              <div
+                className="deleteMessage"
+                onClick={() => {
+                  this.props.deleteMessage(this.state.messageSelectedResult);
+                  socket.emit("send mess", "");
+                  this.setState({ messageSelected: [] });
+                  this.setState({ messageSettings: true });
                 }}
               >
-                Send
-              </button>
+                удалить
+              </div>
+              <div
+                onClick={() => {
+                  this.setState({ messageSelectedForChangesMessage: false });
+                  this.setState({ messageSettings: true });
+                  this.setState({
+                    sendMessage: this.state.messageSelectedMessage,
+                  });
+                }}
+              >
+                изменить
+              </div>
+              <div
+                onClick={() => {
+                  this.setState({ messageSelected: [] });
+                  this.setState({ messageSettings: true });
+                  this.setState({ messageSelectedResult: [] });
+                  socket.emit("send mess", "");
+                }}
+              >
+                отмена
+              </div>
             </div>
           ) : (
             <div className="messageSettings">
-              <div>удалить</div>
-              <div>изменить</div>
-              <div>отмена</div>
+              <div
+                className="deleteMessage"
+                onClick={() => {
+                  this.props.deleteMessage(this.state.messageSelectedResult);
+                  socket.emit("send mess", "");
+                  this.setState({ messageSelected: [] });
+                  this.setState({ messageSettings: true });
+                }}
+              >
+                удалить
+              </div>
+              <div
+                onClick={() => {
+                  this.setState({ messageSelected: [] });
+                  this.setState({ messageSettings: true });
+                  this.setState({ messageSelectedResult: [] });
+                  socket.emit("send mess", "");
+                }}
+              >
+                отмена
+              </div>
             </div>
           )}
         </div>
@@ -246,6 +388,8 @@ const ConnectedChatMessage = connect(
     allMessage: actionAllMessage,
     changeLastMessage: actionChangeLastMessage,
     allChatsGroupOneUser: actionAllChatsGroupOneUser,
+    changeMessage: actionChangeMessage,
+    deleteMessage: actionDeleteMessage,
   }
 )(ChatMessageInfo);
 

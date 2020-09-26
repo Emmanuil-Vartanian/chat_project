@@ -1,4 +1,4 @@
-const { buildSchema } = require("graphql");
+const { buildSchema } = require("graphql")
 
 var schema = buildSchema(`
   type Query {
@@ -18,6 +18,8 @@ var schema = buildSchema(`
     changePassword(email: String, password: String): User
     changeAvatar(id: ID!, avatar: String): User
     createMessage(message: String, autorId: String, partnerId: String): Message
+    changeMessage(id: ID!, message: String): Message
+    deleteMessage(id: [ID!]): String
     changeLastMessage(id: ID!, lastMessage: String): ChatGroup
     createChatGroup(autorId: String, partnerId: String): ChatGroup
     createImage(image: String, autorId: String): Image

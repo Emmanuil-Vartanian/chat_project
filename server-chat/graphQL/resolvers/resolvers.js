@@ -184,6 +184,23 @@ const createMessage = async ({ message, autorId, partnerId }) => {
   else ({ message: "Not message" });
 };
 
+const changeMessage = async ({ id, message }) => {
+  const putMess = await Message.findByPk(id);
+  if (putMess) {
+    await Message.update({ message }, { where: { id } });
+    return await Message.findByPk(id);
+  } else return { id: "Message not find" };
+};
+
+const deleteMessage = async ({ id }) => {
+  for (const value of id) {
+    const messFind = await Message.findOne({ where: { id: value } });
+    if (messFind) {
+      await Message.destroy({ where: { id: value } });
+    } else return "Message not find";
+  }
+};
+
 const getAllChatGroup = async () => {
   const foundAllChatGroups = await ChatGroup.findAll();
   for (var allUsers of foundAllChatGroups) {
@@ -289,6 +306,8 @@ var root = {
   getAllMessages,
   getAllMessagesOneUser,
   createMessage,
+  changeMessage,
+  deleteMessage,
   getAllChatGroup,
   getAllChatGroupOneUser,
   createChatGroup,
