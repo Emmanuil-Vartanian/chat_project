@@ -18,6 +18,7 @@ class PutPasswordForm extends Component {
       newPassword: "",
       confirmNewPassword: "",
       backErrorPassword: false,
+      backErrorPasswordValidate: false,
       newPasswordEye: "password",
       confirmNewPasswordEye: "password",
       backErrorMailNotFound: false,
@@ -54,12 +55,17 @@ class PutPasswordForm extends Component {
     }
   }
 
-  buttonEnter = (e) => {
-    if (e.key === "Enter") {
-      this.state.confirmNewPassword === this.state.newPassword
+  validateAndPutPassword = () => {
+    const patternPassword = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}$/;
+    this.state.confirmNewPassword === this.state.newPassword
+      ? this.state.newPassword.match(patternPassword)
         ? this.props.putPassword(this.state.email, this.state.newPassword)
-        : this.setState({ backErrorPassword: true })
-    }
+        : this.setState({ backErrorPasswordValidate: true })
+      : this.setState({ backErrorPassword: true });
+  };
+
+  buttonEnter = (e) => {
+    if (e.key === "Enter") this.validateAndPutPassword();
   };
 
   render() {
@@ -91,9 +97,11 @@ class PutPasswordForm extends Component {
               value={this.state.newPassword}
               placeholder="Новый пароль"
               type={this.state.newPasswordEye}
+              title="Должен содержать не менее одной цифры, одной прописной и строчной буквы и не менее 6 или более символов"
               onChange={(e) => {
                 this.setState({ newPassword: e.target.value });
                 this.setState({ backErrorPassword: false });
+                this.setState({ backErrorPasswordValidate: false });
               }}
             />
             <div
@@ -130,6 +138,7 @@ class PutPasswordForm extends Component {
               onChange={(e) => {
                 this.setState({ confirmNewPassword: e.target.value });
                 this.setState({ backErrorPassword: false });
+                this.setState({ backErrorPasswordValidate: false });
               }}
             />
             <div
@@ -164,16 +173,18 @@ class PutPasswordForm extends Component {
             </div>
           ) : null}
 
+          {this.state.backErrorPasswordValidate ? (
+            <div className="error">
+              <p></p>
+              <div>
+                <p>Неверный формат пароля</p>
+              </div>
+            </div>
+          ) : null}
+
           <button
             className="login-button"
-            onClick={() =>
-              this.state.confirmNewPassword === this.state.newPassword
-                ? this.props.putPassword(
-                    this.state.email,
-                    this.state.newPassword
-                  )
-                : this.setState({ backErrorPassword: true })
-            }
+            onClick={() => this.validateAndPutPassword()}
             disabled={
               !this.state.email ||
               !this.state.newPassword ||

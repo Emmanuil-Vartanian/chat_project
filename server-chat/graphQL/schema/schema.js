@@ -15,6 +15,7 @@ var schema = buildSchema(`
   type Mutation {
     createUser(email: String, login: String, password: String, avatar: String): User
     changeOnline(id: ID!, online: Boolean): User
+    changeWriteMessage(id: ID!, writeMessage: Boolean): User
     changePassword(email: String, password: String): User
     changeAvatar(id: ID!, avatar: String): User
     createMessage(message: String, autorId: String, partnerId: String): Message
@@ -22,6 +23,7 @@ var schema = buildSchema(`
     deleteMessage(id: [ID!]): String
     changeLastMessage(id: ID!, lastMessage: String): ChatGroup
     createChatGroup(autorId: String, partnerId: String): ChatGroup
+    deleteChatGroup(id: ID!): String
     createImage(image: String, autorId: String): Image
   }
   type User {
@@ -32,6 +34,7 @@ var schema = buildSchema(`
     login: String
     avatar: String
     online: Boolean
+    writeMessage: Boolean
   }
   type Message {
     id: Int

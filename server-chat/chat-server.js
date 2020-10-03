@@ -75,10 +75,13 @@ io.sockets.on("connection", (socket) => {
   });
 
   socket.on("online", (data) => {
-    console.log(data);
     io.sockets.emit("add online", { online: data });
   });
-})
+
+  socket.on("writeMessage", (data) => {
+    io.sockets.emit("add writeMessage", { writeMessage: data });
+  });
+});
 
 // sequelize.sync()
 

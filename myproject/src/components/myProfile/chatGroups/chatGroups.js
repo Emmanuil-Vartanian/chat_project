@@ -20,7 +20,7 @@ class ChatGroupBar extends Component {
       for (var keyData in stateObj[keys]) {
         if (keyData === "data") {
           const allObj = stateObj[keys][keyData][resolverName];
-          if (allObj) return allObj.map(a);
+          if (allObj) return allObj.map(a)
         }
       }
     }

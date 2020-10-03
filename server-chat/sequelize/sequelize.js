@@ -42,6 +42,7 @@ User.init(
     },
     avatar: Sequelize.STRING,
     online: { type: Sequelize.BOOLEAN, defaultValue: false },
+    writeMessage: { type: Sequelize.BOOLEAN, defaultValue: false },
   },
   { sequelize, modelName: "user" }
 );

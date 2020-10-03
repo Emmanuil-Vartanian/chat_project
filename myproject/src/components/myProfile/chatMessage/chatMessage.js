@@ -20,6 +20,7 @@ import {
   actionChangeLastMessage,
   actionChangeMessage,
   actionDeleteMessage,
+  actionWriteMessage,
 } from "./actionCreator/index";
 import dialogueIsEmpty from "../../../imagesForSite/dialogueIsEmpty.png";
 
@@ -37,7 +38,7 @@ class ChatMessageInfo extends Component {
       messageSelectedMessage: "",
       messageSettings: true,
       messageSelectedForDeleteMessage: [],
-      messageSelectedForChangesMessage: true,
+      messageSelectedForChangesMessage: false,
     };
 
     socket.on("add mess", () => {
@@ -61,8 +62,8 @@ class ChatMessageInfo extends Component {
     this.state.messageSelected.sort((a, b) => a - b);
 
     for (var i = 0; i < this.state.messageSelected.length; i++) {
-      this.state.messageSelected[i] != this.state.messageSelected[i - 1] &&
-        this.state.messageSelected[i + 1] != this.state.messageSelected[i] &&
+      this.state.messageSelected[i] !== this.state.messageSelected[i - 1] &&
+        this.state.messageSelected[i + 1] !== this.state.messageSelected[i] &&
         messageSelectedResult.push(this.state.messageSelected[i]);
     }
 
@@ -74,36 +75,43 @@ class ChatMessageInfo extends Component {
     } else this.setState({ messageSettings: false });
   };
 
-  buttonEnter = (e) => {
-    if (e.key === "Enter") {
-      if (this.state.messageSelectedForChangesMessage) {
-        socket.emit("send mess", this.state.sendMessage);
-        this.props.createMessage(
-          this.state.sendMessage,
-          localStorage.getItem("idAutorForMessage"),
-          localStorage.getItem("idPartnerForMessage")
-        );
-        this.props.changeLastMessage(
-          localStorage.getItem("idChatGroup"),
-          this.state.sendMessage
-        );
-        setTimeout(() => {
-          const idAutor = localStorage.getItem("idAutor");
-          this.props.allChatsGroupOneUser(idAutor);
-        }, 0);
-        this.setState({ sendMessage: "" });
-      } else {
-        socket.emit("send mess", this.state.sendMessage);
-        this.props.changeMessage(
-          this.state.messageSelectedResult[0],
-          this.state.sendMessage
-        );
-        this.setState({ messageSelectedForChangesMessage: true });
-        this.setState({ sendMessage: "" });
-        this.setState({ messageSelected: [] });
-        this.setState({ messageSelectedResult: [] });
-      }
+  validateForSendMessage = () => {
+    if (!this.state.messageSelectedForChangesMessage) {
+      socket.emit("send mess", this.state.sendMessage);
+      this.props.createMessage(
+        this.state.sendMessage,
+        localStorage.getItem("idAutorForMessage"),
+        localStorage.getItem("idPartnerForMessage") ||
+          localStorage.getItem("partnerMessId")
+      );
+      this.props.changeLastMessage(
+        localStorage.getItem("idChatGroup"),
+        this.state.sendMessage
+      );
+      setTimeout(() => {
+        const idAutor = localStorage.getItem("idAutor");
+        this.props.allChatsGroupOneUser(idAutor);
+      }, 0);
+      // this.props.writeMessage(localStorage.getItem("idAutor"), false);
+      this.setState({ sendMessage: "" });
+      socket.emit("writeMessage", false);
+    } else {
+      socket.emit("send mess", this.state.sendMessage);
+      this.props.changeMessage(
+        this.state.messageSelectedResult[0],
+        this.state.sendMessage
+      );
+      this.props.writeMessage(localStorage.getItem("idAutor"), false);
+      this.setState({ messageSelectedForChangesMessage: false });
+      this.setState({ sendMessage: "" });
+      this.setState({ messageSelected: [] });
+      this.setState({ messageSelectedResult: [] });
+      socket.emit("writeMessage", false);
     }
+  };
+
+  buttonEnter = (e) => {
+    if (e.key === "Enter") this.validateForSendMessage();
   };
 
   way(obj, resolverName, a) {
@@ -156,6 +164,15 @@ class ChatMessageInfo extends Component {
       const idAutor = localStorage.getItem("idAutor");
       this.props.allChatsGroupOneUser(idAutor);
     });
+
+    socket.on("add writeMessage", (data) => {
+      if (
+        data.writeMessage &&
+        data.writeMessage !== localStorage.getItem("idAutor")
+      )
+        this.setState({ messageWriteNow: true });
+      else this.setState({ messageWriteNow: false });
+    });
   }
 
   componentDidUpdate(preProps, preState) {
@@ -181,6 +198,7 @@ class ChatMessageInfo extends Component {
             ref={(el) => (this.messagesContainer = el)}
           >
             {this.way("allMessageOneUser", "getAllMessagesOneUser", (el) => {
+              // console.log(el);
               return (
                 <Messages
                   key={el.id}
@@ -192,13 +210,46 @@ class ChatMessageInfo extends Component {
                   autorAvatar={el.autorId.avatar}
                   partnerAvatar={el.partnerId.avatar}
                   updateDate={this.updateDate}
+                  writeMessage={
+                    +localStorage.getItem("idAutor") !== el.autorId.id
+                      ? el.autorId.writeMessage
+                      : el.partnerId.writeMessage
+                  }
                 />
               );
             })}
           </div>
 
+          {this.state.messageWriteNow ? (
+            <div>write {localStorage.getItem("loginPartner")}</div>
+          ) : null}
+
           {this.state.messageSettings ? (
-            this.state.messageSelectedForChangesMessage ? (
+            <>
+              {this.state.messageSelectedForChangesMessage ? (
+                <div className="editMessage">
+                  <div>
+                    <p>Редактировать сообщение</p>
+                    <p>{this.state.messageSelectedMessage}</p>
+                  </div>
+
+                  <div className="iconClose">
+                    <CloseOutlined
+                      onClick={() => {
+                        this.setState({ messageSettings: true });
+                        socket.emit("send mess", "");
+                        this.setState({
+                          messageSelectedForChangesMessage: false,
+                        });
+                        this.setState({ sendMessage: "" });
+                        this.setState({ messageSelected: [] });
+                        this.setState({ messageSelectedResult: [] });
+                      }}
+                    />
+                  </div>
+                </div>
+              ) : null}
+
               <div className="sendMessage" onKeyPress={this.buttonEnter}>
                 {this.state.windowEmoji && (
                   <div className="emojiOn">
@@ -217,148 +268,67 @@ class ChatMessageInfo extends Component {
                   value={this.state.sendMessage}
                   onChange={(e) => {
                     this.setState({ sendMessage: e.target.value });
-                    this.setState({ messageWriteNow: true });
+                    // this.setState({ messageWriteNow: true });
+                    // if (this.state.sendMessage.length === 0) {
+                    //   socket.emit("writeMessage", false);
+                    // } else
+                    //   socket.emit(
+                    //     "writeMessage",
+                    //     localStorage.getItem("idAutor")
+                    //   );
+
+                    // console.log(this.state.sendMessage);
+                    setTimeout(() => {
+                      if (this.state.sendMessage.length === 0) {
+                        socket.emit("writeMessage", false);
+                      } else
+                        socket.emit(
+                          "writeMessage",
+                          localStorage.getItem("idAutor")
+                        );
+                    }, 0);
+                    // this.props.writeMessage(
+                    //   localStorage.getItem("idAutor"),
+                    //   true
+                    // );
                   }}
                 />
-                <button
-                  onClick={() => {
-                    socket.emit("send mess", this.state.sendMessage);
-
-                    this.props.createMessage(
-                      this.state.sendMessage,
-                      localStorage.getItem("idAutorForMessage"),
-                      localStorage.getItem("idPartnerForMessage")
-                    );
-
-                    setTimeout(() => {
-                      const idAutor = localStorage.getItem("idAutor");
-                      this.props.allChatsGroupOneUser(idAutor);
-                      this.props.changeLastMessage(
-                        localStorage.getItem("idChatGroup"),
-                        this.state.sendMessage
-                      );
-                    }, 0);
-
-                    this.setState({ sendMessage: "" });
-                  }}
-                >
+                <button onClick={() => this.validateForSendMessage()}>
                   Send
                 </button>
               </div>
-            ) : (
-              <>
-                <div className="editMessage">
-                  <div>
-                    <p>Hедактировать сообщение</p>
-                    <p>{this.state.messageSelectedMessage}</p>
-                  </div>
-                  <div className="iconClose">
-                    <CloseOutlined
-                      onClick={() => {
-                        // this.setState({ messageSelected: [] });
-                        this.setState({ messageSettings: true });
-                        // this.setState({ messageSelectedResult: [] });
-                        socket.emit("send mess", "");
-
-                        this.setState({
-                          messageSelectedForChangesMessage: true,
-                        });
-                        this.setState({ sendMessage: "" });
-                        this.setState({ messageSelected: [] });
-                        this.setState({ messageSelectedResult: [] });
-                      }}
-                    />
-                  </div>
-                </div>
-
-                <div className="sendMessage" onKeyPress={this.buttonEnter}>
-                  {this.state.windowEmoji && (
-                    <div className="emojiOn">
-                      <Picker set="apple" />
-                    </div>
-                  )}
-
-                  <SmileOutlined
-                    className="smiles"
-                    onClick={() =>
-                      this.setState({ windowEmoji: !this.state.windowEmoji })
-                    }
-                  />
-                  <input
-                    type="text"
-                    value={this.state.sendMessage}
-                    onChange={(e) => {
-                      this.setState({ sendMessage: e.target.value });
-                      // this.setState({ messageWriteNow: true });
-                    }}
-                  />
-                  <button
-                    onClick={() => {
-                      socket.emit("send mess", this.state.sendMessage);
-                      this.props.changeMessage(
-                        this.state.messageSelectedResult[0],
-                        this.state.sendMessage
-                      );
-                      this.setState({ messageSelectedForChangesMessage: true });
-                      this.setState({ sendMessage: "" });
-                      this.setState({ messageSelected: [] });
-                      this.setState({ messageSelectedResult: [] });
-                    }}
-                  >
-                    Send
-                  </button>
-                </div>
-              </>
-            )
-          ) : this.state.messageSelectedResult.length <= 1 ? (
-            <div className="messageSettings">
-              <div
-                className="deleteMessage"
-                onClick={() => {
-                  this.props.deleteMessage(this.state.messageSelectedResult);
-                  socket.emit("send mess", "");
-                  this.setState({ messageSelected: [] });
-                  this.setState({ messageSettings: true });
-                }}
-              >
-                удалить
-              </div>
-              <div
-                onClick={() => {
-                  this.setState({ messageSelectedForChangesMessage: false });
-                  this.setState({ messageSettings: true });
-                  this.setState({
-                    sendMessage: this.state.messageSelectedMessage,
-                  });
-                }}
-              >
-                изменить
-              </div>
-              <div
-                onClick={() => {
-                  this.setState({ messageSelected: [] });
-                  this.setState({ messageSettings: true });
-                  this.setState({ messageSelectedResult: [] });
-                  socket.emit("send mess", "");
-                }}
-              >
-                отмена
-              </div>
-            </div>
+            </>
           ) : (
             <div className="messageSettings">
               <div
-                className="deleteMessage"
+                className="settings"
                 onClick={() => {
-                  this.props.deleteMessage(this.state.messageSelectedResult);
-                  socket.emit("send mess", "");
-                  this.setState({ messageSelected: [] });
-                  this.setState({ messageSettings: true });
+                  setTimeout(() => {
+                    this.props.deleteMessage(this.state.messageSelectedResult);
+                    socket.emit("send mess", "");
+                    this.setState({ messageSelected: [] });
+                    this.setState({ messageSettings: true });
+                  }, 0);
                 }}
               >
                 удалить
               </div>
+              {this.state.messageSelectedResult.length <= 1 ? (
+                <div
+                  className="settings"
+                  onClick={() => {
+                    this.setState({ messageSelectedForChangesMessage: true });
+                    this.setState({ messageSettings: true });
+                    this.setState({
+                      sendMessage: this.state.messageSelectedMessage,
+                    });
+                  }}
+                >
+                  изменить
+                </div>
+              ) : null}
               <div
+                className="settings"
                 onClick={() => {
                   this.setState({ messageSelected: [] });
                   this.setState({ messageSettings: true });
@@ -390,6 +360,7 @@ const ConnectedChatMessage = connect(
     allChatsGroupOneUser: actionAllChatsGroupOneUser,
     changeMessage: actionChangeMessage,
     deleteMessage: actionDeleteMessage,
+    writeMessage: actionWriteMessage,
   }
 )(ChatMessageInfo);
 

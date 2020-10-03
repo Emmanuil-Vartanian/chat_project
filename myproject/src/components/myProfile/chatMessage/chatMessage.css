@@ -15,12 +15,12 @@
 }
 
 .messagesBlock {
-  height: 89%;
+  height: 81%;
   overflow: auto;
 }
 
 .sendMessage {
-  margin-top: 20px;
+  margin-top: 25px;
   display: flex;
   align-items: center;
 }
@@ -89,8 +89,10 @@
 }
 
 .messageSettings {
-  margin-top: 20px;
+  margin-top: 27px;
   text-transform: uppercase;
+  border-top: 1px solid;
+  padding-top: 27px;
   display: flex;
   justify-content: space-between;
 }
@@ -109,4 +111,17 @@
 
 .iconClose:hover {
   color: #759ee4;
+}
+
+.settings {
+  color: white;
+  background: #3d78cd;
+  padding: 7px 15px;
+  border-radius: 2px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.settings:hover{
+  background: #386db8;
 }

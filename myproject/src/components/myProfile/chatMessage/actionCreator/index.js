@@ -5,9 +5,9 @@ const actionAllMessageOneUserPromise = (autorId, partnerId) => {
     `query allMessageOneUser($autorId: String, $partnerId: String) {
       getAllMessagesOneUser(autorId: $autorId, partnerId: $partnerId) {
         id, message, createdAt, autorId {
-          id, login, avatar
+          id, login, avatar, writeMessage
         }, partnerId {
-          id, login, avatar
+          id, login, avatar, writeMessage
         }
       }
     }`,
@@ -118,6 +118,24 @@ const actionDeleteMessage = (id) => {
   };
 };
 
+const actionChangeWriteMessagePromise = (id, writeMessage) => {
+  var promise = getGQL("http://localhost:9999/graphql")(
+    `mutation changeWriteMessage($id: ID!, $writeMessage: Boolean) {
+      changeWriteMessage(id: $id, writeMessage: $writeMessage) {
+        id, email, login, avatar, online, writeMessage
+      }
+    }`,
+    { id, writeMessage }
+  );
+  return actionPromise("deleteMessage", promise);
+};
+
+const actionWriteMessage = (id, writeMessage) => {
+  return async (dispatch) => {
+    await dispatch(actionChangeWriteMessagePromise(id, writeMessage));
+  };
+};
+
 export {
   actionAllMessageOneUser,
   actionCreateMessage,
@@ -125,4 +143,5 @@ export {
   actionChangeLastMessage,
   actionChangeMessage,
   actionDeleteMessage,
+  actionWriteMessage
 };

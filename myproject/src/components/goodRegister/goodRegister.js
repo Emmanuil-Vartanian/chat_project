@@ -10,7 +10,12 @@ import { actionCreateImage, actionChangeAvatar } from "./actionCreator/index";
 class GoodRegister1 extends Component {
   constructor(props) {
     super(props);
-    this.state = { image: "", selectedFile: null, backErrorFile: false };
+    this.state = {
+      image: "",
+      selectedFile: null,
+      backErrorFile: false,
+      formatBackErrorFile: false,
+    };
   }
 
   onClickHandler = () => {
@@ -26,7 +31,7 @@ class GoodRegister1 extends Component {
       <div className="registered">
         {localStorage.getItem("registerIdForImage") ? (
           <div className="good-register">
-            <h2>Вы успешно зарегестрировались.</h2>
+            <h2>Вы успешно зарегистрировались.</h2>
             <p>Желаете загрузить аватарку?</p>
             <input
               type="file"
@@ -40,6 +45,7 @@ class GoodRegister1 extends Component {
                 });
                 this.setState({ image: e.target.value });
                 this.setState({ backErrorFile: false });
+                this.setState({ formatBackErrorFile: false });
               }}
             />
             <br />
@@ -47,17 +53,23 @@ class GoodRegister1 extends Component {
               <button
                 onClick={() => {
                   if (this.state.image) {
-                    history.push("/sign_in");
-                    this.onClickHandler();
-                    this.props.cretaeImage(
-                      this.state.selectedFile.name,
-                      localStorage.getItem("registerIdForImage")
-                    );
-                    this.props.changeAvatar(
-                      localStorage.getItem("registerIdForImage"),
-                      this.state.selectedFile.name
-                    );
-                    localStorage.registerIdForImage = "";
+                    const formatFile = /(?:\.([^.]+))?$/;
+                    if (
+                      formatFile.exec(this.state.image)[1] === "png" ||
+                      formatFile.exec(this.state.image)[1] === "jpg"
+                    ) {
+                      history.push("/sign_in");
+                      this.onClickHandler();
+                      this.props.cretaeImage(
+                        this.state.selectedFile.name,
+                        localStorage.getItem("registerIdForImage")
+                      );
+                      this.props.changeAvatar(
+                        localStorage.getItem("registerIdForImage"),
+                        this.state.selectedFile.name
+                      );
+                      localStorage.registerIdForImage = "";
+                    } else this.setState({ formatBackErrorFile: true });
                   } else this.setState({ backErrorFile: true });
                 }}
               >
@@ -76,6 +88,12 @@ class GoodRegister1 extends Component {
             {this.state.backErrorFile ? (
               <div className="errorAvatar">
                 <p>Файл не выбран</p>
+              </div>
+            ) : null}
+
+            {this.state.formatBackErrorFile ? (
+              <div className="errorAvatar">
+                <p>Неверный формат фото</p>
               </div>
             ) : null}
           </div>

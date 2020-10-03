@@ -65,6 +65,15 @@ const changeOnline = async ({ id, online }) => {
   }
 };
 
+const changeWriteMessage = async ({ id, writeMessage }) => {
+  var userFind = await User.findByPk(id);
+  if (userFind) {
+    await User.update({ writeMessage }, { where: { id } });
+    userFind.avatar = "The write message";
+    return userFind;
+  }
+};
+
 const getAllImages = async () => {
   const images = await Image.findAll();
   for (var allImages of images) {
@@ -251,8 +260,8 @@ const getAllChatGroupOneUser = async ({ id }) => {
         }
         return autorChatGroup;
       } else {
+        partnerChatGroup.sort((a, b) => (a.updatedAt > b.updatedAt ? -1 : 1));
         for (var value of partnerChatGroup) {
-          partnerChatGroup.sort((a, b) => (a.updatedAt > b.updatedAt ? -1 : 1));
           const autor = await User.findAll({ where: { id: value.autorId } });
           value.autorId = autor[0];
           value.partnerId = partner[0];
@@ -273,16 +282,27 @@ const createChatGroup = async ({ autorId, partnerId }) => {
     });
     if (!oneUserId) {
       var newChatGroup = await ChatGroup.create({ autorId, partnerId });
+      
       const autor = await User.findAll({ where: { id: newChatGroup.autorId } });
       const partner = await User.findAll({
         where: { id: newChatGroup.partnerId },
       });
       newChatGroup.autorId = autor[0];
       newChatGroup.partnerId = partner[0];
+      console.log(newChatGroup);
       return newChatGroup;
     }
   } catch (e) {
     return e;
+  }
+};
+
+const deleteChatGroup = async ({ id }) => {
+  for (const value of id) {
+    const chatGroupFind = await ChatGroup.findOne({ where: { id: value } });
+    if (chatGroupFind) {
+      await ChatGroup.destroy({ where: { id: value } });
+    } else return "Chat group not find";
   }
 };
 
@@ -301,6 +321,7 @@ var root = {
   getAllUsers,
   changePassword,
   changeOnline,
+  changeWriteMessage,
   createUser,
   changeAvatar,
   getAllMessages,
@@ -311,6 +332,7 @@ var root = {
   getAllChatGroup,
   getAllChatGroupOneUser,
   createChatGroup,
+  deleteChatGroup,
   getAllImages,
   getAllImagesOneUser,
   createImage,

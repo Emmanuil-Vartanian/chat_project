@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import { actionRegister, actionCreateImage } from "./actionCreator/index";
 import "./signUp.css";
 
-import history from "../../history";
+// import history from "../../history";
 
 class Register1 extends Component {
   constructor(props) {
@@ -18,6 +18,7 @@ class Register1 extends Component {
       registerEye: "password",
       registerConfirmEye: "password",
       backErrorPassword: false,
+      backErrorPasswordValidate: false,
       backErrorEmail: false,
     };
   }
@@ -35,14 +36,17 @@ class Register1 extends Component {
   }
 
   validateAndRegister() {
+    const patternPassword = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}$/;
     this.state.registerPassword === this.state.confirmPassword
-      ? this.validateEmailPattern(this.state.registerEmail)
-        ? this.props.register(
-            this.state.registerEmail,
-            this.state.registerPassword,
-            this.state.login
-          )
-        : this.setState({ backErrorEmail: true })
+      ? this.state.registerPassword.match(patternPassword)
+        ? this.validateEmailPattern(this.state.registerEmail)
+          ? this.props.register(
+              this.state.registerEmail,
+              this.state.registerPassword,
+              this.state.login
+            )
+          : this.setState({ backErrorEmail: true })
+        : this.setState({ backErrorPasswordValidate: true })
       : this.setState({ backErrorPassword: true });
   }
 
@@ -58,7 +62,7 @@ class Register1 extends Component {
   render() {
     return (
       <div className="register">
-        {localStorage.allObj === "" ? (
+        {/* {localStorage.allObj !== "" ? ( */}
           <div className="register-form" onKeyPress={this.buttonEnter}>
             <div className="login-title">
               <h2>Создать свой аккаунт</h2>
@@ -116,9 +120,11 @@ class Register1 extends Component {
                   type={this.state.registerEye}
                   id="registerPassword"
                   name="password"
+                  title="Должен содержать не менее одной цифры, одной прописной и строчной буквы и не менее 6 или более символов"
                   onChange={(e) => {
                     this.setState({ registerPassword: e.target.value });
                     this.setState({ backErrorPassword: false });
+                    this.setState({ backErrorPasswordValidate: false });
                   }}
                 />
                 <div
@@ -154,9 +160,11 @@ class Register1 extends Component {
                   type={this.state.registerConfirmEye}
                   id="confirmPassword"
                   name="confirmPassword"
+                  title="Должен содержать не менее одной цифры, одной прописной и строчной буквы и не менее 6 или более символов"
                   onChange={(e) => {
                     this.setState({ confirmPassword: e.target.value });
                     this.setState({ backErrorPassword: false });
+                    this.setState({ backErrorPasswordValidate: false });
                   }}
                 />
                 <div
@@ -193,12 +201,19 @@ class Register1 extends Component {
               </div>
             ) : null}
 
+            {this.state.backErrorPasswordValidate ? (
+              <div className="pattern-password">
+                <p></p>
+                <div>
+                  <p>Неверный формат пароля</p>
+                </div>
+              </div>
+            ) : null}
+
             <div className="block-input-btn">
               <p></p>
               <button
-                onClick={() => {
-                  this.validateAndRegister();
-                }}
+                onClick={() => this.validateAndRegister()}
                 disabled={
                   !this.state.registerEmail ||
                   !this.state.registerPassword ||
@@ -210,9 +225,9 @@ class Register1 extends Component {
               </button>
             </div>
           </div>
-        ) : (
+        {/* ) : (
           history.push("/my_profile")
-        )}
+        )} */}
       </div>
     );
   }

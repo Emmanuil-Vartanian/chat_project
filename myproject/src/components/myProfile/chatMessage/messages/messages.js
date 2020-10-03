@@ -1,11 +1,11 @@
 import React, { Component } from "react";
-import io from "socket.io-client";
+// import io from "socket.io-client;
 
 import date from "../../../../date/date";
 
 import "./messages.css";
 
-const socket = io.connect("http://localhost:9999");
+// const socket = io.connect("http://localhost:9999");
 
 class Messages extends Component {
   constructor(props) {
@@ -19,6 +19,11 @@ class Messages extends Component {
 
   componentDidMount() {
     this.setState({ newMessage: this.props.message });
+    // console.log(this.props.writeMessage);
+    // if (this.props.writeMessage) {
+    //   console.log("hi");
+    // } else console.log("bye");
+    // this.props.updateDate(this.props.writeMessage);
   }
 
   render() {
