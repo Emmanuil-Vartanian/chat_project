@@ -19,11 +19,6 @@ class Messages extends Component {
 
   componentDidMount() {
     this.setState({ newMessage: this.props.message });
-    // console.log(this.props.writeMessage);
-    // if (this.props.writeMessage) {
-    //   console.log("hi");
-    // } else console.log("bye");
-    // this.props.updateDate(this.props.writeMessage);
   }
 
   render() {
@@ -41,15 +36,11 @@ class Messages extends Component {
               this.setState({ messageSelected: !this.state.messageSelected });
               this.setState({ messageSelectedId: this.props.id });
               setTimeout(() => {
-                // this.props.updateDate(this.state.messageSelectedId);
-                // this.props.updateDate(this.props.id);
                 this.props.updateDate({
                   idMessage: this.props.id,
                   messageForChanges: this.props.message,
                 });
               }, 0);
-              // localStorage.setItem("messageId", this.props.id);
-              // localStorage.setItem("changeMessage", this.props.message);
             }}
           >
             <div className="infoMessageAutor">
@@ -108,15 +99,11 @@ class Messages extends Component {
               this.setState({ messageSelected: !this.state.messageSelected });
               this.setState({ messageSelectedId: this.props.id });
               setTimeout(() => {
-                // this.props.updateDate(this.state.messageSelectedId);
-                // this.props.updateDate(this.props.id);
                 this.props.updateDate({
                   idMessage: this.props.id,
                   messageForChanges: this.props.message,
                 });
               }, 0);
-              // localStorage.setItem("messageId", this.props.id);
-              // localStorage.setItem("changeMessage", this.props.message);
             }}
           >
             <div className="avatar">
@@ -156,6 +143,8 @@ class Messages extends Component {
             </div>
           </div>
         )}
+
+        {this.props.deleteAllMessageOneUser(this.props.id)}
       </>
     );
   }

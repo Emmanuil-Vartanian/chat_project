@@ -4,7 +4,11 @@ import { connect } from "react-redux";
 import io from "socket.io-client";
 import { Picker } from "emoji-mart";
 
-import { SmileOutlined, CloseOutlined } from "@ant-design/icons";
+import {
+  SmileOutlined,
+  CloseOutlined,
+  EllipsisOutlined,
+} from "@ant-design/icons";
 
 import "./chatMessage.css";
 import "emoji-mart/css/emoji-mart.css";
@@ -39,6 +43,7 @@ class ChatMessageInfo extends Component {
       messageSettings: true,
       messageSelectedForDeleteMessage: [],
       messageSelectedForChangesMessage: false,
+      deleteAllMessageOneUser: []
     };
 
     socket.on("add mess", () => {
@@ -74,6 +79,14 @@ class ChatMessageInfo extends Component {
       this.setState({ messageSelected: [] });
     } else this.setState({ messageSettings: false });
   };
+
+  deleteAllMessageOneUser = (value) => {
+    // console.log(value);
+    const af = []
+    af.push(value)
+    console.log(af);
+    // this.setState({deleteAllMessageOneUser: [value]})
+  }
 
   validateForSendMessage = () => {
     if (!this.state.messageSelectedForChangesMessage) {
@@ -165,17 +178,23 @@ class ChatMessageInfo extends Component {
       this.props.allChatsGroupOneUser(idAutor);
     });
 
-    socket.on("add writeMessage", (data) => {
+    socket.on("add writeMessage", ({ writeMessage, sumAutorAndPartnerId }) => {
       if (
-        data.writeMessage &&
-        data.writeMessage !== localStorage.getItem("idAutor")
+        writeMessage &&
+        writeMessage !== localStorage.getItem("idAutor") &&
+        sumAutorAndPartnerId ===
+          +localStorage.getItem("idAutorForWriteMessage") +
+            +localStorage.getItem("idPartnerForWriteMessage")
       )
         this.setState({ messageWriteNow: true });
       else this.setState({ messageWriteNow: false });
+
+      if (writeMessage !== localStorage.getItem("idAutor"))
+        this.setState({ sendMessage: "" });
     });
   }
 
-  componentDidUpdate(preProps, preState) {
+  componentDidUpdate() {
     this.scrollToBottom();
   }
 
@@ -190,7 +209,20 @@ class ChatMessageInfo extends Component {
           ) : (
             <span style={{ color: "#03c603" }}> онлайн</span>
           )}
-        </div>
+
+          <nav>
+            <input id="settingChatGroup__toggle" type="checkbox" />
+            <label
+              className="settingChatGroup__btn"
+              htmlFor="settingChatGroup__toggle"
+            >
+              <EllipsisOutlined />
+            </label>
+            <ul className="settingChatGroup__box">
+              <li className="settingChatGroup__item">Удалить чат</li>
+            </ul>
+          </nav>
+        </div>{console.log(this.state.deleteAllMessageOneUser)}
 
         <div className="chatMessages">
           <div
@@ -198,7 +230,18 @@ class ChatMessageInfo extends Component {
             ref={(el) => (this.messagesContainer = el)}
           >
             {this.way("allMessageOneUser", "getAllMessagesOneUser", (el) => {
-              // console.log(el);
+              localStorage.setItem(
+                "idAutorForWriteMessage",
+                +localStorage.getItem("idAutor") === el.autorId.id
+                  ? el.autorId.id
+                  : el.partnerId.id
+              );
+              localStorage.setItem(
+                "idPartnerForWriteMessage",
+                +localStorage.getItem("idAutor") !== el.autorId.id
+                  ? el.autorId.id
+                  : el.partnerId.id
+              );
               return (
                 <Messages
                   key={el.id}
@@ -215,6 +258,7 @@ class ChatMessageInfo extends Component {
                       ? el.autorId.writeMessage
                       : el.partnerId.writeMessage
                   }
+                  deleteAllMessageOneUser={this.deleteAllMessageOneUser}
                 />
               );
             })}
@@ -268,33 +312,21 @@ class ChatMessageInfo extends Component {
                   value={this.state.sendMessage}
                   onChange={(e) => {
                     this.setState({ sendMessage: e.target.value });
-                    // this.setState({ messageWriteNow: true });
-                    // if (this.state.sendMessage.length === 0) {
-                    //   socket.emit("writeMessage", false);
-                    // } else
-                    //   socket.emit(
-                    //     "writeMessage",
-                    //     localStorage.getItem("idAutor")
-                    //   );
-
-                    // console.log(this.state.sendMessage);
                     setTimeout(() => {
                       if (this.state.sendMessage.length === 0) {
                         socket.emit("writeMessage", false);
                       } else
-                        socket.emit(
-                          "writeMessage",
-                          localStorage.getItem("idAutor")
-                        );
+                        socket.emit("writeMessage", {
+                          idAutor: localStorage.getItem("idAutor"),
+                          sumAutorAndPartnerId:
+                            +localStorage.getItem("idPartnerForMessage") +
+                            +localStorage.getItem("idAutorForMessage"),
+                        });
                     }, 0);
-                    // this.props.writeMessage(
-                    //   localStorage.getItem("idAutor"),
-                    //   true
-                    // );
                   }}
                 />
                 <button onClick={() => this.validateForSendMessage()}>
-                  Send
+                  отправить
                 </button>
               </div>
             </>
@@ -346,7 +378,9 @@ class ChatMessageInfo extends Component {
   }
 }
 
-const ChatMessage = () => <ConnectedChatMessage />;
+const ChatMessage = ({ senMessageNull }) => (
+  <ConnectedChatMessage senMessageNull={senMessageNull} />
+);
 
 const ConnectedChatMessage = connect(
   (state) => {

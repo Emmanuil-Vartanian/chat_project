@@ -3,6 +3,74 @@
   font-size: 18px;
   border-bottom: 1px solid;
   padding: 15px 0;
+  position: relative;
+}
+
+.settingChatGroup__btn {
+  display: inline-block;
+  position: absolute;
+  right: 15px;
+  top: 12px;
+  font-size: 25px;
+  transform: rotate(90deg);
+  cursor: pointer;
+}
+
+.settingChatGroup__btn:hover {
+  color: #2b82d7;
+}
+
+#settingChatGroup__toggle {
+  display: none;
+}
+
+.settingChatGroup__box {
+  visibility: hidden;
+}
+
+.settingChatGroup__box {
+  position: absolute;
+  visibility: hidden;
+  overflow: hidden;
+  top: 50px;
+  right: 0;
+  width: 100%;
+  max-width: 150px;
+  height: 0;
+  background-color: #ffffff;
+  z-index: 2;
+  transition: all 0.3s;
+  box-shadow: 1px 0px 6px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+}
+
+.settingChatGroup__item {
+  line-height: 2;
+  color: #2b82d7;
+  font-size: 17px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.settingChatGroup__box > li {
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.settingChatGroup__box > li:hover {
+  background: #eaf3fb;
+}
+
+#settingChatGroup__toggle:checked ~ .settingChatGroup__btn {
+  color: #2b82d7;
+}
+
+#settingChatGroup__toggle:checked ~ .settingChatGroup__box {
+  visibility: visible;
+  top: 50px;
+  height: 100px;
+  padding: 10px 0;
 }
 
 .chatMessages {
@@ -32,7 +100,18 @@
 
 .sendMessage > button {
   width: 25%;
-  padding: 4px;
+  padding: 6px;
+  background: #3d78cd;
+  color: white;
+  border-radius: 1px;
+  font-weight: 600;
+  cursor: pointer;
+  text-transform: uppercase;
+  border: none;
+}
+
+.sendMessage > button:hover {
+  background: #386db8;
 }
 
 .dialogueIsEmpty {
@@ -122,6 +201,6 @@
   cursor: pointer;
 }
 
-.settings:hover{
+.settings:hover {
   background: #386db8;
 }

@@ -78,8 +78,8 @@ io.sockets.on("connection", (socket) => {
     io.sockets.emit("add online", { online: data });
   });
 
-  socket.on("writeMessage", (data) => {
-    io.sockets.emit("add writeMessage", { writeMessage: data });
+  socket.on("writeMessage", ({idAutor, sumAutorAndPartnerId}) => {
+    io.sockets.emit("add writeMessage", { writeMessage: idAutor, sumAutorAndPartnerId });
   });
 });
 

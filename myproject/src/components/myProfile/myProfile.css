@@ -180,11 +180,13 @@
   content: "";
   top: -7px;
 }
+
 .menu__btn > span::after {
   content: "";
   top: 7px;
 }
-.menu__box:not([not-menu]) {
+
+.menu__box {
   position: absolute;
   visibility: hidden;
   overflow: hidden;
@@ -228,12 +230,14 @@
   top: 0;
   transform: rotate(0);
   transition: transform 0.5s;
+  background: #2b82d7;
 }
 
 #menu__toggle:checked ~ .menu__btn > span::after {
   top: 0;
   transform: rotate(90deg);
   transition: transform 0.3s;
+  background: #2b82d7;
 }
 
 #menu__toggle:checked ~ .menu__box {

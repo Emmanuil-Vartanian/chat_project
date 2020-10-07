@@ -34,6 +34,7 @@ class MyProfile1 extends Component {
       messageBlockPadding: false,
       activeTab: 0,
       lastMessage: "",
+      senMessageNull: false
     };
 
     socket.on("add chat", () => {
@@ -62,20 +63,6 @@ class MyProfile1 extends Component {
       }
     }
   }
-
-  // way2(obj, resolverName) {
-  //   const stateObj = this.props.state[obj];
-  //   console.log(this.props.state);
-  //   for (var keys in stateObj) {
-  //     for (var keyData in stateObj[keys]) {
-  //       if (keyData === "data") {
-  //         const allObj = stateObj[keys][keyData][resolverName];
-  //         // console.log(allObj);
-  //         if (allObj) return allObj;
-  //       }
-  //     }
-  //   }
-  // }
 
   userStatusOnline() {
     window.onload = () => {
@@ -124,14 +111,14 @@ class MyProfile1 extends Component {
                     <span className="span">Список чатов</span>
                   </div>
 
-                  <nav className="nav-left main-nav hamburger-menu">
+                  <nav>
                     <input id="menu__toggle" type="checkbox" />
                     <label className="menu__btn" htmlFor="menu__toggle">
                       <span></span>
                     </label>
-                    <ul className="menu-box menu__box">
+                    <ul className="menu__box">
                       <li>
-                        <Link className="link menu__item" to="#">
+                        <Link className="menu__item" to="#">
                           Настройки
                         </Link>
                       </li>
@@ -147,7 +134,7 @@ class MyProfile1 extends Component {
                           socket.emit("online", false);
                         }}
                       >
-                        <Link className="link menu__item" to="">
+                        <Link className="menu__item" to="">
                           Выйти
                         </Link>
                       </li>
@@ -236,103 +223,88 @@ class MyProfile1 extends Component {
                       "allChatsGroupOneUser",
                       "getAllChatGroupOneUser",
                       (el) => (
-                        // console.log(el),
-                        // console.log(+localStorage.getItem("idAutor")),
-                        // console.log(el.autorId.id),
-                        // console.log(el.autorId.avatar),
-                        // console.log(el.partnerId.avatar),
-                        (
-                          <div
-                            id="btnChat"
-                            key={el.id}
-                            onClick={() => {
-                              // console.log(el);
-                              history.push(`/my_profile/${el.id}`);
-                              localStorage.setItem("idChatGroup", el.id);
-                              localStorage.setItem(
-                                "loginPartner",
-                                +localStorage.getItem("idAutor") !==
-                                  el.autorId.id
-                                  ? el.autorId.login
-                                  : el.partnerId.login
-                              );
-                              localStorage.setItem(
-                                "idAutorForMessage",
-                                +localStorage.getItem("idAutor") ===
-                                  el.autorId.id
-                                  ? el.autorId.id
-                                  : el.partnerId.id
-                              );
-                              localStorage.setItem(
-                                "idPartnerForMessage",
-                                +localStorage.getItem("idAutor") !==
-                                  el.autorId.id
-                                  ? el.autorId.id
-                                  : el.partnerId.id
-                              );
-                              localStorage.setItem(
-                                "autorMessId",
-                                el.autorId.id
-                              );
-                              localStorage.setItem(
-                                "partnerMessId",
-                                el.partnerId.id
-                              );
+                        <div
+                          id="btnChat"
+                          key={el.id}
+                          onClick={() => {
+                            // console.log(el);
+                            history.push(`/my_profile/${el.id}`);
+                            localStorage.setItem("idChatGroup", el.id);
+                            localStorage.setItem(
+                              "loginPartner",
+                              +localStorage.getItem("idAutor") !== el.autorId.id
+                                ? el.autorId.login
+                                : el.partnerId.login
+                            );
+                            localStorage.setItem(
+                              "idAutorForMessage",
+                              +localStorage.getItem("idAutor") === el.autorId.id
+                                ? el.autorId.id
+                                : el.partnerId.id
+                            );
+                            localStorage.setItem(
+                              "idPartnerForMessage",
+                              +localStorage.getItem("idAutor") !== el.autorId.id
+                                ? el.autorId.id
+                                : el.partnerId.id
+                            );
+                            localStorage.setItem("autorMessId", el.autorId.id);
+                            localStorage.setItem(
+                              "partnerMessId",
+                              el.partnerId.id
+                            );
 
-                              localStorage.setItem(
-                                "onlinePartner",
-                                +localStorage.getItem("idAutor") !==
-                                  el.autorId.id
-                                  ? el.autorId.online
-                                  : el.partnerId.online
-                              );
+                            localStorage.setItem(
+                              "onlinePartner",
+                              +localStorage.getItem("idAutor") !== el.autorId.id
+                                ? el.autorId.online
+                                : el.partnerId.online
+                            );
 
-                              localStorage.setItem(
-                                "updatedAtPartner",
-                                +localStorage.getItem("idAutor") !==
-                                  el.autorId.id
-                                  ? el.autorId.updatedAt
-                                  : el.partnerId.updatedAt
-                              );
+                            localStorage.setItem(
+                              "updatedAtPartner",
+                              +localStorage.getItem("idAutor") !== el.autorId.id
+                                ? el.autorId.updatedAt
+                                : el.partnerId.updatedAt
+                            );
 
-                              this.props.allMessageOneUser(
-                                String(el.autorId.id),
-                                String(el.partnerId.id)
-                              );
-                              this.setState({ messageBlockPadding: true });
-                              this.clickEventHandler(el.id);
-                            }}
-                          >
-                            <ChatGroup
-                              id={el.id}
-                              avatar={
-                                +localStorage.getItem("idAutor") !==
-                                el.autorId.id
-                                  ? el.autorId.avatar
-                                  : el.partnerId.avatar
-                              }
-                              login={
-                                +localStorage.getItem("idAutor") !==
-                                el.autorId.id
-                                  ? el.autorId.login
-                                  : el.partnerId.login
-                              }
-                              online={
-                                +localStorage.getItem("idAutor") !==
-                                el.autorId.id
-                                  ? el.autorId.online
-                                  : el.partnerId.online
-                              }
-                              lastMessage={el.lastMessage}
-                              updatedAt={el.updatedAt}
-                              addedName={
-                                this.state.activeTab === el.id
-                                  ? "active"
-                                  : "groups"
-                              }
-                            />
-                          </div>
-                        )
+                            this.props.allMessageOneUser(
+                              String(el.autorId.id),
+                              String(el.partnerId.id)
+                            );
+                            this.setState({ messageBlockPadding: true });
+                            this.clickEventHandler(el.id);
+                            socket.emit("writeMessage", false);
+                            this.setState({senMessageNull: ""})
+
+                          }}
+                        >
+                          <ChatGroup
+                            id={el.id}
+                            avatar={
+                              +localStorage.getItem("idAutor") !== el.autorId.id
+                                ? el.autorId.avatar
+                                : el.partnerId.avatar
+                            }
+                            login={
+                              +localStorage.getItem("idAutor") !== el.autorId.id
+                                ? el.autorId.login
+                                : el.partnerId.login
+                            }
+                            online={
+                              +localStorage.getItem("idAutor") !== el.autorId.id
+                                ? el.autorId.online
+                                : el.partnerId.online
+                            }
+                            lastMessage={el.lastMessage}
+                            updatedAt={el.updatedAt}
+                            addedName={
+                              this.state.activeTab === el.id
+                                ? "active"
+                                : "groups"
+                            }
+                          />
+                        </div>
                       )
                     )}
               </div>
@@ -340,7 +312,7 @@ class MyProfile1 extends Component {
 
             <div className="chat-messages">
               {this.state.messageBlockPadding ? (
-                <ChatMessage />
+                <ChatMessage senMessageNull={this.state.senMessageNull} />
               ) : (
                 <div className="openChat">
                   <div>
