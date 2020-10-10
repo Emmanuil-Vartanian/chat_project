@@ -136,6 +136,22 @@ const actionWriteMessage = (id, writeMessage) => {
   };
 };
 
+const actionDeleteChatGroupPromise = (id) => {
+  var promise = getGQL("http://localhost:9999/graphql")(
+    `mutation deleteChatGroup($id: ID!) {
+      deleteChatGroup(id: $id) 
+    }`,
+    { id }
+  );
+  return actionPromise("deleteChatGroup", promise);
+};
+
+const actionDeleteChatGroup = (id) => {
+  return async (dispatch) => {
+    await dispatch(actionDeleteChatGroupPromise(id));
+  };
+};
+
 export {
   actionAllMessageOneUser,
   actionCreateMessage,
@@ -143,5 +159,6 @@ export {
   actionChangeLastMessage,
   actionChangeMessage,
   actionDeleteMessage,
-  actionWriteMessage
+  actionWriteMessage,
+  actionDeleteChatGroup
 };

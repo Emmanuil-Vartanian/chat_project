@@ -66,8 +66,8 @@ app.get("/image/:image", async (req, res) =>
 io.sockets.on("connection", (socket) => {
   console.log("Ok react");
 
-  socket.on("send mess", (data) => {
-    io.sockets.emit("add mess", { msg: data });
+  socket.on("send mess", ({ falseFalse, sumAutorAndPartnerId}) => {
+    io.sockets.emit("add mess", { falseFalse, sumAutorAndPartnerId });
   });
 
   socket.on("create chat", (data) => {
@@ -78,9 +78,16 @@ io.sockets.on("connection", (socket) => {
     io.sockets.emit("add online", { online: data });
   });
 
-  socket.on("writeMessage", ({idAutor, sumAutorAndPartnerId}) => {
-    io.sockets.emit("add writeMessage", { writeMessage: idAutor, sumAutorAndPartnerId });
+  socket.on("writeMessage", ({ idAutor, sumAutorAndPartnerId }) => {
+    io.sockets.emit("add writeMessage", {
+      writeMessage: idAutor,
+      sumAutorAndPartnerId,
+    });
   });
+
+  // socket.on("deleteChat", ({ idAutor, sumAutorAndPartnerId }) => {
+  //   io.sockets.emit("delete chat", { deleteChatId: idAutor, sumAutorAndPartnerId });
+  // });
 });
 
 // sequelize.sync()

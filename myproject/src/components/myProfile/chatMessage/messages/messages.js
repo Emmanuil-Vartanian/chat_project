@@ -143,8 +143,6 @@ class Messages extends Component {
             </div>
           </div>
         )}
-
-        {this.props.deleteAllMessageOneUser(this.props.id)}
       </>
     );
   }

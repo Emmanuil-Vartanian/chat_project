@@ -136,13 +136,14 @@ const getAllMessages = async () => {
 
 const getAllMessagesOneUser = async ({ autorId, partnerId }) => {
   const foundAllMessages = await Message.findAll();
+  // console.log(autorId, partnerId);
 
   for (var allUsers of foundAllMessages) {
     const autor = await User.findAll({ where: { id: allUsers.autorId } });
     const partner = await User.findAll({ where: { id: allUsers.partnerId } });
     const autorOrPartner =
       autor[0].id === +autorId || partner[0].id === +partnerId;
-
+    // console.log(autor, partner);
     if (autorOrPartner) {
       const autorMessage = await Message.findAll({
         where: { autorId, partnerId },
@@ -282,14 +283,13 @@ const createChatGroup = async ({ autorId, partnerId }) => {
     });
     if (!oneUserId) {
       var newChatGroup = await ChatGroup.create({ autorId, partnerId });
-      
+
       const autor = await User.findAll({ where: { id: newChatGroup.autorId } });
       const partner = await User.findAll({
         where: { id: newChatGroup.partnerId },
       });
       newChatGroup.autorId = autor[0];
       newChatGroup.partnerId = partner[0];
-      console.log(newChatGroup);
       return newChatGroup;
     }
   } catch (e) {
@@ -298,12 +298,20 @@ const createChatGroup = async ({ autorId, partnerId }) => {
 };
 
 const deleteChatGroup = async ({ id }) => {
-  for (const value of id) {
-    const chatGroupFind = await ChatGroup.findOne({ where: { id: value } });
-    if (chatGroupFind) {
-      await ChatGroup.destroy({ where: { id: value } });
-    } else return "Chat group not find";
-  }
+  const chatGroupFind = await ChatGroup.findByPk(id);
+
+  if (chatGroupFind) {
+      const allMessagesOneUser = getAllMessagesOneUser({
+        autorId: chatGroupFind.autorId,
+        partnerId: chatGroupFind.partnerId,
+      });
+      allMessagesOneUser.then((messages) => {
+        for (const messagesObj of messages) {
+          deleteMessage({ id: [messagesObj.id] });
+        }
+      });
+    await ChatGroup.destroy({ where: { id } });
+  } else return "Chat group not find";
 };
 
 const changeLastMessage = async ({ id, lastMessage }) => {

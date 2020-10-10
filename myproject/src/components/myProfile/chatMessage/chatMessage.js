@@ -25,6 +25,7 @@ import {
   actionChangeMessage,
   actionDeleteMessage,
   actionWriteMessage,
+  actionDeleteChatGroup,
 } from "./actionCreator/index";
 import dialogueIsEmpty from "../../../imagesForSite/dialogueIsEmpty.png";
 
@@ -43,16 +44,23 @@ class ChatMessageInfo extends Component {
       messageSettings: true,
       messageSelectedForDeleteMessage: [],
       messageSelectedForChangesMessage: false,
-      deleteAllMessageOneUser: []
     };
 
-    socket.on("add mess", () => {
-      this.props.allMessageOneUser(
-        localStorage.getItem("autorMessId"),
-        localStorage.getItem("partnerMessId")
-      );
-      const idAutor = localStorage.getItem("idAutor");
-      this.props.allChatsGroupOneUser(idAutor);
+    socket.on("add mess", ({ falseFalse, sumAutorAndPartnerId }) => {
+      if (
+        sumAutorAndPartnerId ===
+        +localStorage.getItem("idAutorForWriteMessage") +
+          +localStorage.getItem("idPartnerForWriteMessage")
+      ) {
+        this.props.allMessageOneUser(
+          localStorage.getItem("autorMessId"),
+          localStorage.getItem("partnerMessId")
+        );
+        const idAutor = localStorage.getItem("idAutor");
+        this.props.allChatsGroupOneUser(idAutor);
+      }
+
+      if (falseFalse === false) this.props.updateDate(false);
     });
   }
 
@@ -80,17 +88,13 @@ class ChatMessageInfo extends Component {
     } else this.setState({ messageSettings: false });
   };
 
-  deleteAllMessageOneUser = (value) => {
-    // console.log(value);
-    const af = []
-    af.push(value)
-    console.log(af);
-    // this.setState({deleteAllMessageOneUser: [value]})
-  }
-
   validateForSendMessage = () => {
     if (!this.state.messageSelectedForChangesMessage) {
-      socket.emit("send mess", this.state.sendMessage);
+      socket.emit("send mess", {
+        sumAutorAndPartnerId:
+          +localStorage.getItem("idPartnerForMessage") +
+          +localStorage.getItem("idAutorForMessage"),
+      });
       this.props.createMessage(
         this.state.sendMessage,
         localStorage.getItem("idAutorForMessage"),
@@ -105,11 +109,14 @@ class ChatMessageInfo extends Component {
         const idAutor = localStorage.getItem("idAutor");
         this.props.allChatsGroupOneUser(idAutor);
       }, 0);
-      // this.props.writeMessage(localStorage.getItem("idAutor"), false);
       this.setState({ sendMessage: "" });
       socket.emit("writeMessage", false);
     } else {
-      socket.emit("send mess", this.state.sendMessage);
+      socket.emit("send mess", {
+        sumAutorAndPartnerId:
+          +localStorage.getItem("idPartnerForMessage") +
+          +localStorage.getItem("idAutorForMessage"),
+      });
       this.props.changeMessage(
         this.state.messageSelectedResult[0],
         this.state.sendMessage
@@ -219,10 +226,23 @@ class ChatMessageInfo extends Component {
               <EllipsisOutlined />
             </label>
             <ul className="settingChatGroup__box">
-              <li className="settingChatGroup__item">Удалить чат</li>
+              <li
+                className="settingChatGroup__item"
+                onClick={() => {
+                  this.props.deleteChatGroup(localStorage.idChatGroup);
+                  socket.emit("send mess", {
+                    falseFalse: false,
+                    sumAutorAndPartnerId:
+                      +localStorage.getItem("idPartnerForMessage") +
+                      +localStorage.getItem("idAutorForMessage"),
+                  });
+                }}
+              >
+                Удалить чат
+              </li>
             </ul>
           </nav>
-        </div>{console.log(this.state.deleteAllMessageOneUser)}
+        </div>
 
         <div className="chatMessages">
           <div
@@ -258,7 +278,6 @@ class ChatMessageInfo extends Component {
                       ? el.autorId.writeMessage
                       : el.partnerId.writeMessage
                   }
-                  deleteAllMessageOneUser={this.deleteAllMessageOneUser}
                 />
               );
             })}
@@ -378,8 +397,8 @@ class ChatMessageInfo extends Component {
   }
 }
 
-const ChatMessage = ({ senMessageNull }) => (
-  <ConnectedChatMessage senMessageNull={senMessageNull} />
+const ChatMessage = ({ updateDate }) => (
+  <ConnectedChatMessage updateDate={updateDate} />
 );
 
 const ConnectedChatMessage = connect(
@@ -395,6 +414,7 @@ const ConnectedChatMessage = connect(
     changeMessage: actionChangeMessage,
     deleteMessage: actionDeleteMessage,
     writeMessage: actionWriteMessage,
+    deleteChatGroup: actionDeleteChatGroup,
   }
 )(ChatMessageInfo);
 

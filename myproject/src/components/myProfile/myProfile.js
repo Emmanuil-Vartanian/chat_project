@@ -44,7 +44,7 @@ class MyProfile1 extends Component {
   }
 
   updateDate = (value) => {
-    this.setState({ lastMessage: value });
+    this.setState({ messageBlockPadding: value });
   };
 
   clickEventHandler = (id) => {
@@ -185,10 +185,6 @@ class MyProfile1 extends Component {
                             String(+localStorage.getItem("idAutor")),
                             String(el.id)
                           );
-                          console.log(
-                            String(+localStorage.getItem("idAutor")),
-                            String(el.id)
-                          );
 
                           this.props.allMessageOneUser(
                             String(+localStorage.getItem("idAutor")),
@@ -199,8 +195,8 @@ class MyProfile1 extends Component {
 
                           socket.emit("create chat", "");
 
-                          const idAutor = localStorage.getItem("idAutor");
-                          this.props.allChatsGroupOneUser(idAutor);
+                          // const idAutor = localStorage.getItem("idAutor");
+                          // this.props.allChatsGroupOneUser(idAutor);
 
                           this.setState({ foundUser: false });
                           this.setState({ text: "" });
@@ -312,7 +308,7 @@ class MyProfile1 extends Component {
 
             <div className="chat-messages">
               {this.state.messageBlockPadding ? (
-                <ChatMessage senMessageNull={this.state.senMessageNull} />
+                <ChatMessage updateDate={this.updateDate} />
               ) : (
                 <div className="openChat">
                   <div>
