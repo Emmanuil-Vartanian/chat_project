@@ -34,7 +34,7 @@ class MyProfile1 extends Component {
       messageBlockPadding: false,
       activeTab: 0,
       lastMessage: "",
-      senMessageNull: false
+      senMessageNull: false,
     };
 
     socket.on("add chat", () => {
@@ -132,6 +132,9 @@ class MyProfile1 extends Component {
                             false
                           );
                           socket.emit("online", false);
+                          setTimeout(() => {
+                            localStorage.setItem("messageNotWrite", false);
+                          }, 0);
                         }}
                       >
                         <Link className="menu__item" to="">
@@ -270,9 +273,10 @@ class MyProfile1 extends Component {
                             );
                             this.setState({ messageBlockPadding: true });
                             this.clickEventHandler(el.id);
-                            socket.emit("writeMessage", false);
-                            this.setState({senMessageNull: ""})
-
+                            socket.emit("writeMessage", {
+                              eraseMessageInputField: true,
+                            });
+                            this.setState({ senMessageNull: "" });
                           }}
                         >
                           <ChatGroup

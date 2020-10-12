@@ -204,3 +204,49 @@
 .settings:hover {
   background: #386db8;
 }
+
+.partnerWriteMessage {
+  position: relative;
+  display: inline;
+}
+
+.partnerWriteMessageCircles {
+  position: absolute;
+  bottom: 7px;
+  right: -20px;
+}
+
+.partnerWriteMessageCircles > span {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #284d81;
+}
+
+.partnerWriteMessageCircles > span:nth-child(1) {
+  content: "";
+  right: 8px;
+  animation: writeMessage 0.47s linear infinite alternate 0s;
+}
+
+.partnerWriteMessageCircles > span:nth-child(2) {
+  content: "";
+  right: 0;
+  animation: writeMessage 0.47s linear infinite alternate 0.2s;
+}
+
+.partnerWriteMessageCircles > span:nth-child(3) {
+  content: "";
+  right: -8px;
+  animation: writeMessage 0.47s linear infinite alternate 0.4s;
+}
+
+@keyframes writeMessage {
+  0% {
+    bottom: -4px;
+  }
+  100% {
+    bottom: 1px;
+  }
+}

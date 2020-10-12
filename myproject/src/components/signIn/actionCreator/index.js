@@ -14,9 +14,9 @@ const actionLoginPromise = (login, password) => {
 const actionLogin = (login, password) => {
   return async (dispatch) => {
     var token = await dispatch(actionLoginPromise(login, password));
-    console.log(token);
     if (token.data.getLogin !== null) {
       history.push("/my_profile");
+      setTimeout(()=>{localStorage.setItem("messageNotWrite", true)}, 0)
     }
   };
 };

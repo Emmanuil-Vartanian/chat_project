@@ -66,7 +66,7 @@ app.get("/image/:image", async (req, res) =>
 io.sockets.on("connection", (socket) => {
   console.log("Ok react");
 
-  socket.on("send mess", ({ falseFalse, sumAutorAndPartnerId}) => {
+  socket.on("send mess", ({ falseFalse, sumAutorAndPartnerId }) => {
     io.sockets.emit("add mess", { falseFalse, sumAutorAndPartnerId });
   });
 
@@ -78,10 +78,11 @@ io.sockets.on("connection", (socket) => {
     io.sockets.emit("add online", { online: data });
   });
 
-  socket.on("writeMessage", ({ idAutor, sumAutorAndPartnerId }) => {
+  socket.on("writeMessage", ({ idAutor, sumAutorAndPartnerId, eraseMessageInputField }) => {
     io.sockets.emit("add writeMessage", {
       writeMessage: idAutor,
-      sumAutorAndPartnerId,
+      sumAutorAndPartnerId, 
+      eraseMessageInputField
     });
   });
 

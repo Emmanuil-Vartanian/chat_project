@@ -44,6 +44,7 @@ class ChatMessageInfo extends Component {
       messageSettings: true,
       messageSelectedForDeleteMessage: [],
       messageSelectedForChangesMessage: false,
+      timeout: 0
     };
 
     socket.on("add mess", ({ falseFalse, sumAutorAndPartnerId }) => {
@@ -185,24 +186,33 @@ class ChatMessageInfo extends Component {
       this.props.allChatsGroupOneUser(idAutor);
     });
 
-    socket.on("add writeMessage", ({ writeMessage, sumAutorAndPartnerId }) => {
-      if (
-        writeMessage &&
-        writeMessage !== localStorage.getItem("idAutor") &&
-        sumAutorAndPartnerId ===
-          +localStorage.getItem("idAutorForWriteMessage") +
-            +localStorage.getItem("idPartnerForWriteMessage")
-      )
-        this.setState({ messageWriteNow: true });
-      else this.setState({ messageWriteNow: false });
+    socket.on(
+      "add writeMessage",
+      ({ writeMessage, sumAutorAndPartnerId, eraseMessageInputField }) => {
+        if (
+          writeMessage &&
+          writeMessage !== localStorage.getItem("idAutor") &&
+          sumAutorAndPartnerId ===
+            +localStorage.getItem("idAutorForWriteMessage") +
+              +localStorage.getItem("idPartnerForWriteMessage")
+        )
+          this.setState({ messageWriteNow: true });
+        else this.setState({ messageWriteNow: false });
 
-      if (writeMessage !== localStorage.getItem("idAutor"))
-        this.setState({ sendMessage: "" });
-    });
+        if (eraseMessageInputField) this.setState({ sendMessage: "" });
+      }
+    );
   }
 
   componentDidUpdate() {
     this.scrollToBottom();
+  }
+
+  partnerNotWriteMessage(){
+    if(this.state.timeout) clearTimeout(this.state.timeout);
+    this.state.timeout = setTimeout(() => {
+      socket.emit("writeMessage", false);
+    }, 3000);
   }
 
   render() {
@@ -284,7 +294,14 @@ class ChatMessageInfo extends Component {
           </div>
 
           {this.state.messageWriteNow ? (
-            <div>write {localStorage.getItem("loginPartner")}</div>
+            <div className="partnerWriteMessage">
+              Пишет {localStorage.getItem("loginPartner")}
+              <div className="partnerWriteMessageCircles">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </div>
           ) : null}
 
           {this.state.messageSettings ? (
@@ -329,19 +346,17 @@ class ChatMessageInfo extends Component {
                 <input
                   type="text"
                   value={this.state.sendMessage}
+                  onKeyDown={() => {
+                    socket.emit("writeMessage", {
+                      idAutor: localStorage.getItem("idAutor"),
+                      sumAutorAndPartnerId:
+                        +localStorage.getItem("idPartnerForMessage") +
+                        +localStorage.getItem("idAutorForMessage"),
+                    });
+                  }}
                   onChange={(e) => {
                     this.setState({ sendMessage: e.target.value });
-                    setTimeout(() => {
-                      if (this.state.sendMessage.length === 0) {
-                        socket.emit("writeMessage", false);
-                      } else
-                        socket.emit("writeMessage", {
-                          idAutor: localStorage.getItem("idAutor"),
-                          sumAutorAndPartnerId:
-                            +localStorage.getItem("idPartnerForMessage") +
-                            +localStorage.getItem("idAutorForMessage"),
-                        });
-                    }, 0);
+                    this.partnerNotWriteMessage()
                   }}
                 />
                 <button onClick={() => this.validateForSendMessage()}>
