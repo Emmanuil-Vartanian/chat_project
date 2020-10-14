@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import { Emoji } from "emoji-mart";
+import reactStringReplace from "react-string-replace";
 
 import date from "../../../date/date";
 import { actionAllImagesOneUser, actionAllImages } from "./actionCreator/index";
@@ -20,7 +22,7 @@ class ChatGroupBar extends Component {
       for (var keyData in stateObj[keys]) {
         if (keyData === "data") {
           const allObj = stateObj[keys][keyData][resolverName];
-          if (allObj) return allObj.map(a)
+          if (allObj) return allObj.map(a);
         }
       }
     }
@@ -51,7 +53,18 @@ class ChatGroupBar extends Component {
           </div>
 
           <div className="lastMessage">
-            {this.props.lastMessage ? this.props.lastMessage : ""}
+            {this.props.lastMessage ? reactStringReplace(
+              this.props.lastMessage,
+              /:(.+?):/g,
+              (match, i) => (
+                <Emoji
+                  key={i + this.props.id}
+                  emoji={match}
+                  set="apple"
+                  size={18}
+                />
+              )
+            ) : ""}
           </div>
         </div>
       </div>

@@ -4,7 +4,7 @@ const actionAllMessageOneUserPromise = (autorId, partnerId) => {
   var promise = getGQL("http://localhost:9999/graphql")(
     `query allMessageOneUser($autorId: String, $partnerId: String) {
       getAllMessagesOneUser(autorId: $autorId, partnerId: $partnerId) {
-        id, message, createdAt, autorId {
+        id, message, messageChanged, createdAt, autorId {
           id, login, avatar, writeMessage
         }, partnerId {
           id, login, avatar, writeMessage
@@ -45,7 +45,7 @@ const actionAllMessagePromise = () => {
   var promise = getGQL("http://localhost:9999/graphql")(
     `query allMessages {
       getAllMessages {
-        id, message, createdAt, autorId{
+        id, message, messageChanged, createdAt, autorId{
           id, login, avatar
         }, partnerId{
           id, login, avatar

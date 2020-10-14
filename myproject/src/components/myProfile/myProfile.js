@@ -35,6 +35,7 @@ class MyProfile1 extends Component {
       activeTab: 0,
       lastMessage: "",
       senMessageNull: false,
+      onlineUser: false,
     };
 
     socket.on("add chat", () => {
@@ -80,9 +81,9 @@ class MyProfile1 extends Component {
     const idAutor = localStorage.getItem("idAutor");
     this.props.allChatsGroupOneUser(idAutor);
     this.props.allMessage();
-    history.push(`/my_profile`);
+    // history.push(`/my_profile`);
 
-    socket.on("add online", () => {
+    socket.on("add online", (online) => {
       const idAutor = localStorage.getItem("idAutor");
       this.props.allChatsGroupOneUser(idAutor);
     });
@@ -312,7 +313,10 @@ class MyProfile1 extends Component {
 
             <div className="chat-messages">
               {this.state.messageBlockPadding ? (
-                <ChatMessage updateDate={this.updateDate} />
+                <ChatMessage
+                  updateDate={this.updateDate}
+                  onlineUser={this.state.onlineUser}
+                />
               ) : (
                 <div className="openChat">
                   <div>

@@ -198,6 +198,7 @@ const changeMessage = async ({ id, message }) => {
   const putMess = await Message.findByPk(id);
   if (putMess) {
     await Message.update({ message }, { where: { id } });
+    await Message.update({ messageChanged: true }, { where: { id } });
     return await Message.findByPk(id);
   } else return { id: "Message not find" };
 };

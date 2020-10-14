@@ -78,13 +78,16 @@ io.sockets.on("connection", (socket) => {
     io.sockets.emit("add online", { online: data });
   });
 
-  socket.on("writeMessage", ({ idAutor, sumAutorAndPartnerId, eraseMessageInputField }) => {
-    io.sockets.emit("add writeMessage", {
-      writeMessage: idAutor,
-      sumAutorAndPartnerId, 
-      eraseMessageInputField
-    });
-  });
+  socket.on(
+    "writeMessage",
+    ({ idAutor, sumAutorAndPartnerId, eraseMessageInputField }) => {
+      io.sockets.emit("add writeMessage", {
+        writeMessage: idAutor,
+        sumAutorAndPartnerId,
+        eraseMessageInputField,
+      });
+    }
+  );
 
   // socket.on("deleteChat", ({ idAutor, sumAutorAndPartnerId }) => {
   //   io.sockets.emit("delete chat", { deleteChatId: idAutor, sumAutorAndPartnerId });

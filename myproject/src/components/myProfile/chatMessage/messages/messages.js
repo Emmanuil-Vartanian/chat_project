@@ -1,11 +1,10 @@
 import React, { Component } from "react";
-// import io from "socket.io-client;
+import { Emoji } from "emoji-mart";
+import reactStringReplace from "react-string-replace";
 
 import date from "../../../../date/date";
 
 import "./messages.css";
-
-// const socket = io.connect("http://localhost:9999");
 
 class Messages extends Component {
   constructor(props) {
@@ -39,6 +38,7 @@ class Messages extends Component {
                 this.props.updateDate({
                   idMessage: this.props.id,
                   messageForChanges: this.props.message,
+                  autorLogin: this.props.autorLogin,
                 });
               }, 0);
             }}
@@ -76,11 +76,29 @@ class Messages extends Component {
                     {this.props.autorLogin || this.props.partnerLogin}
                   </span>
 
-                  <div className="messageAutor">
-                    <span>{this.state.newMessage}</span>
-                    {/* <span>{this.props.message}</span> */}
+                  <div className="messageAutorAndDate">
+                    <div className="messageAutor">
+                      {reactStringReplace(
+                        this.state.newMessage,
+                        /:(.+?):/g,
+                        (match, i) => (
+                          <Emoji
+                            key={i + this.props.id}
+                            emoji={match}
+                            set="apple"
+                            size={20}
+                          />
+                        )
+                      )}
+                    </div>
                     <div className="dateMessage">
-                      {date(this.props.createdAt, "forMessages")}
+                      {this.props.messageChanged ? (
+                        <p>
+                          {date(this.props.createdAt, "forMessages")} изменено
+                        </p>
+                      ) : (
+                        <p>{date(this.props.createdAt, "forMessages")}</p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -133,11 +151,27 @@ class Messages extends Component {
                 {this.props.autorLogin || this.props.partnerLogin}
               </span>
 
-              <div className="message">
-                <span>{this.state.newMessage}</span>
-                {/* <span>{this.props.message}</span> */}
+              <div className="messagePartnerAndDate">
+                <div className="messagePartner">
+                  {reactStringReplace(
+                    this.state.newMessage,
+                    /:(.+?):/g,
+                    (match, i) => (
+                      <Emoji
+                        key={i + this.props.id}
+                        emoji={match}
+                        set="apple"
+                        size={20}
+                      />
+                    )
+                  )}
+                </div>
                 <div className="dateMessage">
-                  {date(this.props.createdAt, "forMessages")}
+                  {this.props.messageChanged ? (
+                    <p>изменено {date(this.props.createdAt, "forMessages")}</p>
+                  ) : (
+                    <p>{date(this.props.createdAt, "forMessages")}</p>
+                  )}
                 </div>
               </div>
             </div>

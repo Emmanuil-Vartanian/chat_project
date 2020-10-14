@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import { connect } from "react-redux";
 import io from "socket.io-client";
 import { Picker } from "emoji-mart";
+import autosize from "autosize";
 
 import {
   SmileOutlined,
@@ -36,6 +37,7 @@ class ChatMessageInfo extends Component {
     super(props);
     this.state = {
       sendMessage: "",
+      sendMessageForSmiles: "",
       windowEmoji: false,
       messageWriteNow: false,
       messageSelected: [],
@@ -44,7 +46,9 @@ class ChatMessageInfo extends Component {
       messageSettings: true,
       messageSelectedForDeleteMessage: [],
       messageSelectedForChangesMessage: false,
-      timeout: 0
+      timeout: 0,
+      partnerOnline: localStorage.getItem("onlinePartner"),
+      autorLogin: "",
     };
 
     socket.on("add mess", ({ falseFalse, sumAutorAndPartnerId }) => {
@@ -65,7 +69,8 @@ class ChatMessageInfo extends Component {
     });
   }
 
-  updateDate = ({ idMessage, messageForChanges }) => {
+  updateDate = ({ idMessage, messageForChanges, autorLogin }) => {
+    this.setState({ autorLogin: autorLogin });
     var messageSelectedResult = [];
     this.setState({ messageSelectedMessage: messageForChanges });
 
@@ -180,6 +185,9 @@ class ChatMessageInfo extends Component {
   };
 
   componentDidMount() {
+    this.textarea.focus();
+    autosize(this.textarea);
+
     this.scrollToBottom();
     socket.on("add online", (data) => {
       const idAutor = localStorage.getItem("idAutor");
@@ -208,11 +216,19 @@ class ChatMessageInfo extends Component {
     this.scrollToBottom();
   }
 
-  partnerNotWriteMessage(){
-    if(this.state.timeout) clearTimeout(this.state.timeout);
-    this.state.timeout = setTimeout(() => {
-      socket.emit("writeMessage", false);
-    }, 3000);
+  partnerNotWriteMessage() {
+    if (this.state.timeout) clearTimeout(this.state.timeout);
+    this.setState({
+      timeout: setTimeout(() => {
+        socket.emit("writeMessage", false);
+      }, 3000),
+    });
+  }
+
+  addEmojiSmile({ colons }) {
+    this.setState({
+      sendMessage: this.state.sendMessage + " " + colons + " ",
+    });
   }
 
   render() {
@@ -278,6 +294,7 @@ class ChatMessageInfo extends Component {
                   createdAt={el.createdAt}
                   id={el.id}
                   message={el.message}
+                  messageChanged={el.messageChanged}
                   autorLogin={el.autorId.login}
                   partnerLogin={el.partnerId.login}
                   autorAvatar={el.autorId.avatar}
@@ -333,7 +350,10 @@ class ChatMessageInfo extends Component {
               <div className="sendMessage" onKeyPress={this.buttonEnter}>
                 {this.state.windowEmoji && (
                   <div className="emojiOn">
-                    <Picker set="apple" />
+                    <Picker
+                      onSelect={(e) => this.addEmojiSmile(e)}
+                      set="apple"
+                    />
                   </div>
                 )}
 
@@ -343,9 +363,11 @@ class ChatMessageInfo extends Component {
                     this.setState({ windowEmoji: !this.state.windowEmoji })
                   }
                 />
-                <input
+                <textarea
                   type="text"
                   value={this.state.sendMessage}
+                  rows="1"
+                  ref={c => (this.textarea = c)}
                   onKeyDown={() => {
                     socket.emit("writeMessage", {
                       idAutor: localStorage.getItem("idAutor"),
@@ -356,9 +378,9 @@ class ChatMessageInfo extends Component {
                   }}
                   onChange={(e) => {
                     this.setState({ sendMessage: e.target.value });
-                    this.partnerNotWriteMessage()
+                    this.partnerNotWriteMessage();
                   }}
-                />
+                ></textarea>
                 <button onClick={() => this.validateForSendMessage()}>
                   отправить
                 </button>
@@ -371,7 +393,11 @@ class ChatMessageInfo extends Component {
                 onClick={() => {
                   setTimeout(() => {
                     this.props.deleteMessage(this.state.messageSelectedResult);
-                    socket.emit("send mess", "");
+                    socket.emit("send mess", {
+                      sumAutorAndPartnerId:
+                        +localStorage.getItem("idPartnerForMessage") +
+                        +localStorage.getItem("idAutorForMessage"),
+                    });
                     this.setState({ messageSelected: [] });
                     this.setState({ messageSettings: true });
                   }, 0);
@@ -379,7 +405,8 @@ class ChatMessageInfo extends Component {
               >
                 удалить
               </div>
-              {this.state.messageSelectedResult.length <= 1 ? (
+              {this.state.messageSelectedResult.length <= 1 &&
+              this.state.autorLogin === localStorage.getItem("loginAutor") ? (
                 <div
                   className="settings"
                   onClick={() => {
@@ -399,7 +426,11 @@ class ChatMessageInfo extends Component {
                   this.setState({ messageSelected: [] });
                   this.setState({ messageSettings: true });
                   this.setState({ messageSelectedResult: [] });
-                  socket.emit("send mess", "");
+                  socket.emit("send mess", {
+                    sumAutorAndPartnerId:
+                      +localStorage.getItem("idPartnerForMessage") +
+                      +localStorage.getItem("idAutorForMessage"),
+                  });
                 }}
               >
                 отмена
@@ -412,8 +443,8 @@ class ChatMessageInfo extends Component {
   }
 }
 
-const ChatMessage = ({ updateDate }) => (
-  <ConnectedChatMessage updateDate={updateDate} />
+const ChatMessage = ({ updateDate, onlineUser }) => (
+  <ConnectedChatMessage updateDate={updateDate} onlineUser={onlineUser} />
 );
 
 const ConnectedChatMessage = connect(

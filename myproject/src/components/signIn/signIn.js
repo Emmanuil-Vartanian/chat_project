@@ -46,7 +46,7 @@ class LoginForm extends Component {
             localStorage.setItem("allObj", allObj);
             localStorage.setItem("idAutor", jwtDecodeUser.sub.id);
             localStorage.setItem("email", jwtDecodeUser.sub.email);
-            localStorage.setItem("login", jwtDecodeUser.sub.login);
+            // localStorage.setItem("login", jwtDecodeUser.sub.login);
             localStorage.setItem("emailAutor", jwtDecodeUser.sub.email);
             localStorage.setItem("loginAutor", jwtDecodeUser.sub.login);
             socket.emit("online", true);

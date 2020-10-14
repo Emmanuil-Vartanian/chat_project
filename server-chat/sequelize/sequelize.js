@@ -50,7 +50,10 @@ User.init(
 class Message extends Sequelize.Model {}
 
 Message.init(
-  { message: Sequelize.STRING },
+  {
+    message: Sequelize.STRING,
+    messageChanged: { type: Sequelize.BOOLEAN, defaultValue: false },
+  },
   { sequelize, modelName: "message" }
 );
 

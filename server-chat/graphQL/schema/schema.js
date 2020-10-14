@@ -40,6 +40,7 @@ var schema = buildSchema(`
     id: Int
     createdAt: String
     message: String
+    messageChanged: Boolean
     autorId: User
     partnerId: User
   }
